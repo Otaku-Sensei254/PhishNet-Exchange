@@ -1,0 +1,30 @@
+# Create/overwrite root .gitignore
+@"
+# Node
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Env files & secrets
+.env
+backend/.env
+frontend/.env.local
+.env.local
+backend/notes.txt
+backend/client_secret_944777351347-lsejhvb7evki423conrmk1jvtgj4jb70.apps.googleusercontent.com.json
+# Logs
+*.log
+npm-debug.log
+yarn-error.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Uploads / local files
+uploads/
+"@ | Out-File -Encoding utf8 .gitignore

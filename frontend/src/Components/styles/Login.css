@@ -1,0 +1,99 @@
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Container Styling */
+.Container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #e6f0ff, #ffffff);
+  padding: 20px;
+}
+
+/* Login Box */
+.login-container {
+  background-color: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Form Styling */
+.login-form h2 {
+  margin-bottom: 24px;
+  color: #1a73e8;
+  text-align: center;
+  font-size: 28px;
+}
+
+/* Input Section */
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.inputs label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.inputs input {
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border 0.2s;
+}
+
+.inputs input:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+/* Login Button */
+.login-button {
+  background-color: #1a73e8;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+.goTo {
+  color: #1a73e8;
+}
+.login-button:hover {
+  background-color: #155ab6;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 30px 20px;
+  }
+
+  .login-form h2 {
+    font-size: 24px;
+  }
+
+  .inputs input {
+    font-size: 14px;
+  }
+
+  .login-button {
+    font-size: 15px;
+  }
+}

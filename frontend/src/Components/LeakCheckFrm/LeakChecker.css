@@ -1,0 +1,83 @@
+.leak-check-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.leak-check-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.leak-input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.leak-check-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.leak-result {
+  margin-top: 20px;
+}
+.results {
+  margin-top: 1.5rem;
+}
+
+.status {
+  color: #333;
+}
+
+.error {
+  color: red;
+}
+.leak-alert {
+  background-color: #ffe5e5;
+  border: 1px solid #ff4d4d;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 6px;
+  animation: pulseAlert 1s ease-in-out;
+}
+
+.leak-warning {
+  color: #cc0000;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.leaked-value {
+  color: #e60000;
+  font-weight: bold;
+}
+
+.safe-message {
+  color: green;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+@keyframes pulseAlert {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}

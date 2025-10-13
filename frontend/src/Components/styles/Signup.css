@@ -1,0 +1,126 @@
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main Container */
+.Container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #e6f0ff, #ffffff);
+  padding: 20px;
+}
+
+/* Shared Container Style */
+.login-container,
+.signup-container {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Shared Form Styling */
+.login-form h2,
+.signup-form h2 {
+  margin-bottom: 24px;
+  color: #1a73e8;
+  text-align: center;
+  font-size: 28px;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.inputs label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.inputs input[type="text"],
+.inputs input[type="email"],
+.inputs input[type="password"] {
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border 0.2s;
+}
+
+.inputs input:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+.inputs input[type="checkbox"] {
+  margin-top: 10px;
+}
+
+/* Buttons */
+.login-button,
+.signup-button {
+  background-color: #1a73e8;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+.goTo,
+.terms {
+  color: #1a73e8;
+}
+
+.login-button:hover,
+.signup-button:hover {
+  background-color: #155ab6;
+}
+.terms-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  p {
+    font-size: 15px;
+  }
+  input {
+    width: 15px;
+    height: 15px;
+  }
+}
+/* Responsive */
+@media (max-width: 480px) {
+  .login-container,
+  .signup-container {
+    padding: 30px 20px;
+  }
+
+  .login-form h2,
+  .signup-form h2 {
+    font-size: 24px;
+  }
+
+  .inputs input {
+    font-size: 14px;
+  }
+
+  .login-button,
+  .signup-button {
+    font-size: 15px;
+  }
+}

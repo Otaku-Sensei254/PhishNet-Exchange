@@ -1,0 +1,7 @@
+node_modules
+# Keep environment variables out of version control
+.env
+/utils/rockyou.txt
+
+/generated/prisma
+.client_secret_944777351347-lsejhvb7evki423conrmk1jvtgj4jb70.apps.googleusercontent.com.json

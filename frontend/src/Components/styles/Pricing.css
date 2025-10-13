@@ -1,0 +1,94 @@
+.pricing-page {
+  padding: 2rem;
+  background: #f7faff;
+  font-family: "Segoe UI", sans-serif;
+  text-align: center;
+}
+
+.pricing-title {
+  font-size: 2.5rem;
+  color: #111;
+  margin-bottom: 0.3rem;
+}
+
+.pricing-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.pricing-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.pricing-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  width: 300px;
+  padding: 2rem 1.5rem;
+  text-align: left;
+  border-top: 4px solid #1e3a8a;
+  transition: transform 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-5px);
+}
+
+.highlighted {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.pricing-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+  color: #1e293b;
+}
+
+.price {
+  font-size: 1.25rem;
+  color: #2563eb;
+  margin-bottom: 1.2rem;
+}
+
+.pricing-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.pricing-card li {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.select-btn {
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width: 100%;
+}
+
+.select-btn:hover {
+  background-color: #1e40af;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pricing-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+}

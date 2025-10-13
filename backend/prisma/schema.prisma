@@ -1,0 +1,74 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==== ENUMS ====
+
+enum Tier {
+  FREE
+  PRO
+  TEAM
+}
+
+enum ThreatType {
+  PHISHING_URL
+  FAKE_LOGIN_PAGE
+  EMAIL_PHISHING
+  FAKE_WEBSITE
+}
+
+// ==== MODELS ====
+
+model User {
+  id         String              @id @default(uuid())
+  email      String              @unique
+  password   String
+  tier       Tier                @default(FREE)
+  createdAt  DateTime            @default(now())
+  threats    Threat[]            // user-submitted threats
+  leakChecks LeakCheckRequest[] // checks done by user
+}
+
+model Threat {
+  id              String     @id @default(uuid())
+  url             String
+  ip              String?
+  email           String?
+  type            ThreatType
+  hashtags        String[]   // Tags like #bankingscam
+  country         String?
+  screenshot      String?    // Cloudinary or local URL
+
+  // Risk evaluation fields
+  sslValid        Boolean?   // SSL certificate validity
+  similarityScore Float?     // Similarity score with legit site (0-1)
+  similaritySite  String?    // Closest legit domain matched
+  domainAgeDays   Int?       // Age in days
+  creationDate    String?    // WHOIS-reported creation date
+  riskScore       Int?       // Risk score from 0–100
+
+  userId          String
+  createdAt       DateTime   @default(now())
+
+  user            User       @relation(fields: [userId], references: [id])
+}
+
+model LeakCheckRequest {
+  id         String     @id @default(uuid())
+  email      String?
+  phone      String?
+  username   String?
+  userId     String
+  createdAt  DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id])
+}

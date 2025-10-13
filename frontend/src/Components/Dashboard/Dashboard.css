@@ -1,0 +1,287 @@
+/* === Dashboard Grid === */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f0f2f5;
+  min-height: 100vh;   /* ✅ allow content to grow */
+  box-sizing: border-box;
+  align-items: start;  /* ✅ keep top-aligned panels */
+}
+
+/* === Panel Styling === */
+.dashboard-left,
+.dashboard-center,
+.dashboard-right {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  max-height: calc(100vh - 40px); /* ✅ scroll within panels */
+}
+
+
+/* Custom Scrollbar */
+.dashboard-left::-webkit-scrollbar,
+.dashboard-center::-webkit-scrollbar,
+.dashboard-right::-webkit-scrollbar {
+  width: 6px;
+}
+.dashboard-left::-webkit-scrollbar-thumb,
+.dashboard-center::-webkit-scrollbar-thumb,
+.dashboard-right::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+/* === Section Titles === */
+.dashboard-left h2,
+.dashboard-center h2,
+.dashboard-right h2 {
+  font-size: 1.25rem;
+  margin-bottom: 15px;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+/* === Profile Icon === */
+.left-Icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+/* === User Info === */
+.dashboard-left ul {
+  list-style: none;
+  padding: 0;
+}
+.dashboard-left li {
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+/* === Subscription Badge === */
+.sub-tier {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.sub-tier.free {
+  background-color: #ddd;
+  color: #333;
+}
+.sub-tier.pro {
+  background-color: #007bff;
+  color: white;
+}
+.sub-tier.team {
+  background-color: #28a745;
+  color: white;
+}
+
+/* === Monitoring Section === */
+.monitor-section.styled-box {
+  background: #55b3e1;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.monitor-section h4 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.monitored-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 10px;
+}
+.monitored-list li {
+  background-color: #fff;
+  padding: 6px 10px;
+  margin: 5px 0;
+  border-left: 4px solid #00aaff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Monitor Form */
+.monitor-form input {
+  display: block;
+  margin: 8px 0;
+  padding: 8px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.monitor-form button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  background-color: #00aaff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.monitor-form button:hover {
+  background-color: #008ecc;
+}
+
+/* === Upgrade Plan Section === */
+.upgrade-plan-section {
+  margin-top: 1.5rem;
+  background-color: #fff8e1;
+  border-left: 5px solid #ffb300;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.upgrade-plan-section h4 {
+  margin-bottom: 0.6rem;
+  color: #6a4e00;
+}
+
+.upgrade-plan-section select,
+.upgrade-plan-section button {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.upgrade-plan-section button {
+  background-color: #ffb300;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.upgrade-plan-section button:hover {
+  background-color: #ff9800;
+}
+
+/* === Leak Checker (Center) === */
+.dashboard-center form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboard-center input,
+.dashboard-center button {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.dashboard-center button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dashboard-center button:hover {
+  background-color: #0056b3;
+}
+
+/* === Right Panel === */
+.auto-scan-toggle {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.animated-toggle {
+  padding: 10px 20px;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.animated-toggle.on {
+  background-color: #3db36b;
+  color: white;
+}
+.animated-toggle.off:hover {
+  background-color: #ccc;
+}
+
+/* Frequency Selector */
+.frequency-selector {
+  margin-top: 10px;
+}
+.frequency-selector select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Automation Locked */
+.automation-locked {
+  background-color: #fef4f4;
+  padding: 10px;
+  border: 1px dashed #e57373;
+  border-radius: 8px;
+  color: #d32f2f;
+  margin-top: 15px;
+}
+
+/* History Section */
+.log-section {
+  margin-top: 20px;
+}
+.log-section ul {
+  padding-left: 20px;
+  font-size: 0.9rem;
+}
+.log-section li {
+  margin-bottom: 6px;
+}
+.log-section ul ul {
+  padding-left: 15px;
+}
+.log-section ul ul li {
+  margin-bottom: 4px;
+}
+
+/* === Responsive Layout === */
+@media screen and (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .dashboard-left,
+  .dashboard-center,
+  .dashboard-right {
+    height: auto;
+    margin-bottom: 20px;
+  }
+}

@@ -1,0 +1,93 @@
+/* === Suggest Topic Container === */
+.suggest-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eef2f7 0%, #f9fafb 100%);
+  padding: 2rem;
+}
+
+/* === Suggestion Form === */
+.suggest-form {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.suggest-form h2 {
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+/* === Inputs === */
+.suggest-input,
+.suggest-textarea {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 1.2rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.suggest-input:focus,
+.suggest-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* === Textarea Specific === */
+.suggest-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* === Submit Button === */
+.suggest-btn {
+  width: 100%;
+  padding: 0.95rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+}
+
+.suggest-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+}
+
+.suggest-btn:active {
+  transform: translateY(0);
+}
+
+/* === Animation === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  .suggest-form {
+    padding: 1.5rem;
+  }
+
+  .suggest-form h2 {
+    font-size: 1.4rem;
+  }
+}

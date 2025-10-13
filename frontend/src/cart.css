@@ -1,0 +1,23 @@
+.Cart{
+    position: absolute;
+    left:35rem;
+    top: 13rem;
+    background: navajowhite;
+    padding: 10px 20px;
+    display: inline-block;
+    text-align: justify;
+}
+.Cart li{
+    line-height: 3rem;
+}
+.toa{
+    position: relative;
+    left: 10px;
+    outline: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    padding: 4px 10px;
+    border-radius: 15px;
+    background: rgb(252, 7, 7);
+
+}
