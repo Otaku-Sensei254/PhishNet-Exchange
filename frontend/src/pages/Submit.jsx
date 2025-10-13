@@ -30,7 +30,7 @@ function SubmitPage({ onNewThreat }) {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/link/analyze`,
+        `${process.env.REACT_APP_API_URL}/api/link/analyze`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -70,7 +70,7 @@ function SubmitPage({ onNewThreat }) {
 
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/threats/submit`,
+        `${process.env.REACT_APP_API_URL}/api/threats/submit`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
