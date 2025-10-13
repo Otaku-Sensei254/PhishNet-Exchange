@@ -30,7 +30,7 @@ function IOC({ onNewIOC }) {
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/iocs/submit`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/iocs/submit`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
