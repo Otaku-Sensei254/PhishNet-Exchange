@@ -28,7 +28,7 @@ function LeakCheckForm() {
 
     try {
       // 1️⃣ Run leak check
-      const res = await fetch("http://localhost:5000/api/check/leak", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/check/leak`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +43,7 @@ function LeakCheckForm() {
       setResults(data.matches || []);
 
       // 2️⃣ Save scan history to MongoDB
-      await fetch("http://localhost:5000/api/scan/save", {
+      await fetch(`${process.env.REACT_APP_API_URL}/scan/save`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

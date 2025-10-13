@@ -16,7 +16,7 @@ const CommunityPage = () => {
   useEffect(() => {
     const fetchSuggestions = async () => {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/api/suggestions", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/suggestions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

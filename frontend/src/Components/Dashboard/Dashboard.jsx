@@ -20,7 +20,7 @@ const Dashboard = () => {
 
     try {
       const decoded = jwtDecode(token);
-      fetch(`http://localhost:5000/api/auth/user/${decoded.id}`)
+      fetch(`${process.env.REACT_APP_API_URL}/auth/user/${decoded.id}`)
         .then((res) => res.json())
         .then((data) =>
           setUser({
@@ -39,7 +39,7 @@ const Dashboard = () => {
     if (user) {
       const token = localStorage.getItem("token");
 
-      fetch("http://localhost:5000/api/scan/history", {
+      fetch(`${process.env.REACT_APP_API_URL}/scan/history`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -84,7 +84,7 @@ const Dashboard = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:5000/api/monitor/add", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/monitor/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -194,7 +194,7 @@ const Dashboard = () => {
                 const amount = plan === "pro" ? 499 : 3000;
                 try {
                   const res = await fetch(
-                    "http://localhost:5000/api/payment/initiate",
+                    `${process.env.REACT_APP_API_URL}/payment/initiate`,
                     {
                       method: "POST",
                       headers: {
@@ -271,48 +271,51 @@ const Dashboard = () => {
         <ToastContainer position="top-right" autoClose={3000} />
         {/* Scan History */}
         <div className="log-section">
-  <h3>Search History</h3>
-  <ul>
-    {history.length > 0 ? (
-      history.map((scan, idx) => (
-        <li key={idx}>
-          <strong>{new Date(scan.timestamp).toLocaleString()}</strong>
-          {scan.matches.length > 0 ? (
-            <ul>
-              {scan.matches.map((match, i) => (
-                <li key={i}>
-                  <strong>{match.field}</strong>: {match.value}
-                  <br />
-                  {match.sources && match.sources.length > 0 ? (
-                    <>
-                      <strong>Sources:</strong>
-                      <ul>
-                        {match.sources.map((src, j) => (
-                          <li key={j}>
-                            <a href={src} target="_blank" rel="noreferrer">
-                              {src}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
+          <h3>Search History</h3>
+          <ul>
+            {history.length > 0 ? (
+              history.map((scan, idx) => (
+                <li key={idx}>
+                  <strong>{new Date(scan.timestamp).toLocaleString()}</strong>
+                  {scan.matches.length > 0 ? (
+                    <ul>
+                      {scan.matches.map((match, i) => (
+                        <li key={i}>
+                          <strong>{match.field}</strong>: {match.value}
+                          <br />
+                          {match.sources && match.sources.length > 0 ? (
+                            <>
+                              <strong>Sources:</strong>
+                              <ul>
+                                {match.sources.map((src, j) => (
+                                  <li key={j}>
+                                    <a
+                                      href={src}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      {src}
+                                    </a>
+                                  </li>
+                                ))}
+                              </ul>
+                            </>
+                          ) : (
+                            <p>No sources found</p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
-                    <p>No sources found</p>
+                    <p>No leaks found.</p>
                   )}
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No leaks found.</p>
-          )}
-        </li>
-      ))
-    ) : (
-      <p>No history yet.</p>
-    )}
-  </ul>
-</div>
-
+              ))
+            ) : (
+              <p>No history yet.</p>
+            )}
+          </ul>
+        </div>
       </div>
     </div>
   );

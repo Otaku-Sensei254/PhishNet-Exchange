@@ -25,7 +25,7 @@ const Navbar = () => {
       try {
         const decoded = JSON.parse(atob(token.split(".")[1]));
         const res = await fetch(
-          `http://localhost:5000/api/auth/user/${decoded.id}`
+           `${process.env.REACT_APP_API_URL}/api/auth/user/${decoded.id}`
         );
         const data = await res.json();
         setUser(data.user); // ✅ Update global user

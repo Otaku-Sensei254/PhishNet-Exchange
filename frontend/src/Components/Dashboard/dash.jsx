@@ -17,7 +17,7 @@ const Dashboard = () => {
 
     try {
       const decoded = jwtDecode(token);
-      fetch(`http://localhost:5000/api/auth/user/${decoded.id}`)
+      fetch(`${process.env.REACT_APP_API_URL}/auth/user/${decoded.id}`)
         .then((res) => res.json())
         .then((data) =>
           setUser({
@@ -35,7 +35,7 @@ const Dashboard = () => {
     if (user?._id) {
       const token = localStorage.getItem("token");
 
-      fetch(`http://localhost:5000/api/scan/history/${user._id}`, {
+      fetch(`${process.env.REACT_APP_API_URL}/scan/history/${user._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -75,7 +75,7 @@ const Dashboard = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:5000/api/monitor/add", {
+      const res = await fetch("${process.env.REACT_APP_API_URL}/monitor/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -182,7 +182,7 @@ const Dashboard = () => {
                 const amount = plan === "pro" ? 499 : 3000;
                 try {
                   const res = await fetch(
-                    "http://localhost:5000/api/payment/initiate",
+                    "${process.env.REACT_APP_API_URL}/payment/initiate",
                     {
                       method: "POST",
                       headers: {

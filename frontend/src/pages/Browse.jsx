@@ -15,7 +15,7 @@ function BrowseIOCs() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/iocs", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/iocs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -75,7 +75,7 @@ function BrowseIOCs() {
   const handleVote = async (id, type) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/iocs/vote/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/iocs/vote/${id}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

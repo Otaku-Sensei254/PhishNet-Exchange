@@ -16,7 +16,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -34,7 +34,7 @@ const Login = () => {
 
         // Fetch user details
         const userRes = await fetch(
-          `http://localhost:5000/api/auth/user/${decoded.id}`
+          `${process.env.REACT_APP_API_URL}/auth/user/${decoded.id}`
         );
         const userData = await userRes.json();
 

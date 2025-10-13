@@ -30,7 +30,7 @@ function IOC({ onNewIOC }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/iocs/submit", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/iocs/submit`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -52,9 +52,8 @@ function IOC({ onNewIOC }) {
         setSourceCountry(null);
         setTags("");
         if (onNewIOC) onNewIOC(data.ioc);
-        navigate("/browse-iocs",{replace:true});
-      }
-       else {
+        navigate("/browse-iocs", { replace: true });
+      } else {
         alert("Failed to submit IOC");
       }
     } catch (err) {

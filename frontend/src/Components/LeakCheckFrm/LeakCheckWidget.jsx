@@ -20,7 +20,7 @@ export default function LeakCheckWidget({ onComplete }) {
     setLoading(true);
     setResults(null);
     try {
-      const res = await axios.post("/api/check-leaks", form);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/check-leaks`, form);
       setResults(res.data.matches || []);
       if (onComplete) onComplete(res.data.matches);
     } catch (err) {
