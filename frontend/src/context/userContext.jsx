@@ -12,7 +12,7 @@ export const UserProvider = ({ children }) => {
     try {
       const decoded = jwtDecode(token);
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/user/${decoded.id}`
+        `${process.env.REACT_APP_API_URL}/api/auth/user/${decoded.id}`
       );
       const data = await res.json();
       setUser(data.user);
