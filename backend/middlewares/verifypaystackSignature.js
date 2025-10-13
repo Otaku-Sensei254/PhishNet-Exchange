@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-export const verifypaystackSignature = (req, res, next) => {
+export const verifyPaystackSignature = (req, res, next) => {
   const secret = process.env.PAYSTACK_SECRET_KEY;
   const signature = req.headers["x-paystack-signature"];
   const hash = crypto
