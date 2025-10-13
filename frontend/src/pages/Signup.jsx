@@ -38,7 +38,7 @@ const Signup = () => {
     try {
       // 1. Register user
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/register`,
+        `${process.env.REACT_APP_API_URL}/api/auth/register`,
         {
           method: "POST",
           body: data,
@@ -60,7 +60,7 @@ const Signup = () => {
         const amount = formData.plan === "pro" ? 499 : 3000;
 
         const payRes = await fetch(
-          `${process.env.REACT_APP_API_URL}/payment/initiate`,
+          `${process.env.REACT_APP_API_URL}/api/payment/initiate`,
           {
             method: "POST",
             headers: {
