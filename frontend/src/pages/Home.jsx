@@ -28,9 +28,7 @@ const Home = () => {
     <div className="Container">
       <div className="home-Container">
         <div className="top">
-          <button>
-            <Link to="/dashboard">Dashboard</Link>
-          </button>
+         
           <h1>Crowd-Powered Phishing Intelligence in Real Time</h1>
           <p>
             Contribute, detect, and monitor phishing threats with live

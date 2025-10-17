@@ -20,6 +20,8 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import Discussions from "./pages/Discussions";
 import IOC from "./pages/IOCs";
 import SubmitPage from "./pages/Submit";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailed from "./pages/PaymentFailed";
 
 // Layout component with Navbar and Footer
 const Layout = () => {
@@ -50,7 +52,16 @@ const router = createBrowserRouter([
       { path: "/suggest", element: <Suggestions /> },
       { path: "/pricing", element: <Pricing /> },
     ],
+    
   },
+  {
+    path:"/payment-success",
+    element:<PaymentSuccess/>
+  },
+  {
+    path:"/payment-failed",
+    element:<PaymentFailed/>
+  }
 ]);
 
 // Render the app

@@ -1,4 +1,3 @@
-// controllers/payment.controller.js
 import { initializePaystackTransaction } from "../utils/paystack.js";
 import pool from "../config/neon.js";
 
@@ -11,10 +10,9 @@ export const initializePayment = async (req, res) => {
   }
 
   try {
-    // Generate unique payment reference
     const paymentReference = `phishnet-${userId}-${Date.now()}`;
 
-    // Save payment reference + plan to Postgres
+    // Save the generated payment reference & selected plan in Postgres
     await pool.query(
       `UPDATE users 
        SET payment_reference = $1, plan = $2 
@@ -26,66 +24,71 @@ export const initializePayment = async (req, res) => {
     const paymentUrl = await initializePaystackTransaction({
       email,
       amount,
-      userId,
       reference: paymentReference,
+      // 👇 Redirects back to frontend after Paystack checkout
+      callback_url: `${process.env.FRONTEND_URL}/payment-success?ref=${paymentReference}`,
     });
 
     return res.status(200).json({ paymentUrl });
   } catch (error) {
-    console.error("Payment initialization error:", error);
+    console.error("💥 Payment initialization error:", error);
     return res.status(500).json({ msg: "Failed to initialize payment" });
   }
 };
 
-// ==================== Paystack Callback ====================
+// ==================== Paystack Callback (redirect after payment) ====================
 export const handlePaystackCallback = async (req, res) => {
   const event = req.body;
 
-  if (event.event !== "charge.success") {
-    return res.status(400).json({ msg: "Unhandled event type" });
+  if (!event || !event.event) {
+    return res.status(400).json({ msg: "Invalid Paystack event" });
   }
 
   const data = event.data;
-  const reference = data.reference;
+  const reference = data?.reference;
+
+  if (!reference) {
+    return res.status(400).json({ msg: "Missing payment reference" });
+  }
 
   try {
-    // Find user by paymentReference in Postgres
+    // Fetch user from Postgres using the stored reference
     const result = await pool.query(
       "SELECT * FROM users WHERE payment_reference = $1",
       [reference]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ msg: "User not found for this payment reference" });
+      console.error(`⚠️ No user found for reference: ${reference}`);
+      return res.status(404).json({ msg: "User not found" });
     }
 
     const user = result.rows[0];
 
-    // Confirm payment
     if (data.status === "success") {
       const subscriptionExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
       await pool.query(
         `UPDATE users 
-         SET plan_paid = $1, subscription_expires = $2, payment_reference = NULL 
-         WHERE id = $3`,
-        [true, subscriptionExpires, user.id]
+         SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL 
+         WHERE id = $2`,
+        [subscriptionExpires, user.id]
       );
 
-      console.log(`✅ Successful payment for: ${user.email}, ref: ${reference}, amount: ${data.amount}`);
+      console.log(`✅ Payment verified for ${user.email} (${reference})`);
 
-      return res.status(200).json({
-        status: "success",
-        message: "Subscription activated",
-      });
+      // ✅ Redirect to frontend success page
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/payment-success?ref=${reference}`
+      );
     } else {
-      return res.status(400).json({
-        status: "failed",
-        message: "Payment not successful",
-      });
+      console.warn(`❌ Payment failed for ${reference}`);
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/payment-failed?ref=${reference}`
+      );
     }
   } catch (error) {
-    console.error("Payment callback error:", error);
-    return res.status(500).json({ msg: "Server error processing payment callback" });
+    console.error("💥 Payment callback error:", error);
+    return res.status(500).json({ msg: "Error processing payment callback" });
   }
 };
