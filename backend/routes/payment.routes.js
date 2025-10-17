@@ -3,6 +3,7 @@ import express from "express";
 import {
   initializePayment,
   handlePaystackCallback,
+  verifyPaystackPayment
 } from "../controllers/payment.controller.js";
 import bodyParser from "body-parser";
 
@@ -42,5 +43,6 @@ router.post(
   },
   handlePaystackCallback
 );
+router.post("/verify", verifyPaystackPayment);
 
 export default router;
