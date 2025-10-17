@@ -1,3 +1,4 @@
+import axios from "axios"; // ✅ You forgot this import
 import { initializePaystackTransaction } from "../utils/paystack.js";
 import pool from "../config/neon.js";
 
@@ -12,7 +13,7 @@ export const initializePayment = async (req, res) => {
   try {
     const paymentReference = `phishnet-${userId}-${Date.now()}`;
 
-    // Save the generated payment reference & selected plan in Postgres
+    // Save payment reference and plan in Postgres
     await pool.query(
       `UPDATE users 
        SET payment_reference = $1, plan = $2 
@@ -26,8 +27,7 @@ export const initializePayment = async (req, res) => {
       email,
       amount,
       reference: paymentReference,
-      // 👇 Redirects back to frontend after Paystack checkout
-      callback_url: `${process.env.FRONTEND_URL}/payment-success?ref=${paymentReference}`,
+      callback_url: `${process.env.FRONTEND_URL}/payment-success`, // ✅ No ?ref here
     });
 
     return res.status(200).json({ paymentUrl });
@@ -37,7 +37,7 @@ export const initializePayment = async (req, res) => {
   }
 };
 
-// ==================== Paystack Callback (redirect after payment) ====================
+// ==================== Paystack Callback (Redirect After Payment) ====================
 export const handlePaystackCallback = async (req, res) => {
   const event = req.body;
 
@@ -53,7 +53,7 @@ export const handlePaystackCallback = async (req, res) => {
   }
 
   try {
-    // Fetch user from Postgres using the stored reference
+    // Check user in DB
     const result = await pool.query(
       "SELECT * FROM users WHERE payment_reference = $1",
       [reference]
@@ -67,7 +67,7 @@ export const handlePaystackCallback = async (req, res) => {
     const user = result.rows[0];
 
     if (data.status === "success") {
-      const subscriptionExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+      const subscriptionExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
       await pool.query(
         `UPDATE users 
@@ -78,14 +78,13 @@ export const handlePaystackCallback = async (req, res) => {
 
       console.log(`✅ Payment verified for ${user.email} (${reference})`);
 
-      // ✅ Redirect to frontend success page
       return res.redirect(
-        `${process.env.FRONTEND_URL}/payment-success?ref=${reference}`
+        `${process.env.FRONTEND_URL}/payment-success?reference=${reference}`
       );
     } else {
       console.warn(`❌ Payment failed for ${reference}`);
       return res.redirect(
-        `${process.env.FRONTEND_URL}/payment-failed?ref=${reference}`
+        `${process.env.FRONTEND_URL}/payment-failed?reference=${reference}`
       );
     }
   } catch (error) {
@@ -93,7 +92,8 @@ export const handlePaystackCallback = async (req, res) => {
     return res.status(500).json({ msg: "Error processing payment callback" });
   }
 };
-//=====================VERIFY PAYMENT FUNCTION======================
+
+// ==================== Verify Payment (Used by Frontend Success Page) ====================
 export const verifyPaystackPayment = async (req, res) => {
   const { reference } = req.body;
 
@@ -105,7 +105,7 @@ export const verifyPaystackPayment = async (req, res) => {
   try {
     console.log("🔍 Verifying Paystack payment for reference:", reference);
 
-    // 1️⃣ Verify payment from Paystack API
+    // 1️⃣ Verify with Paystack API
     const verify = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -119,9 +119,9 @@ export const verifyPaystackPayment = async (req, res) => {
       return res.status(500).json({ msg: "Invalid response from Paystack" });
     }
 
-    // 2️⃣ Check payment status
+    // 2️⃣ If success → update DB
     if (data.status === "success") {
-      const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+      const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
       const result = await pool.query(
         `UPDATE users 
@@ -144,7 +144,7 @@ export const verifyPaystackPayment = async (req, res) => {
       });
     }
 
-    // 3️⃣ If payment was not successful
+    // 3️⃣ If payment failed
     console.warn(`❌ Payment verification failed for ${reference}`);
     return res.status(400).json({ msg: "Payment not successful" });
   } catch (error) {

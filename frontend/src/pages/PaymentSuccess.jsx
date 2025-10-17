@@ -5,7 +5,11 @@ import shieldLogo from "../assets/shield.jpg";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
-  const reference = searchParams.get("ref");
+  const reference =
+  searchParams.get("reference") ||
+  searchParams.get("trxref") ||
+  searchParams.get("ref");
+
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState(null);
