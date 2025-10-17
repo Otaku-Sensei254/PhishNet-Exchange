@@ -28,7 +28,7 @@ function LeakCheckForm() {
 
     try {
       // 1️⃣ Run leak check
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/check/leak`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/check/leak`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
