@@ -1,4 +1,4 @@
-// payment.routes.js
+// backend/routes/payment.routes.js
 import express from "express";
 import {
   initializePayment,
@@ -8,17 +8,18 @@ import bodyParser from "body-parser";
 
 const router = express.Router();
 
+// Initialize user payment (called by frontend)
 router.post("/initiate", initializePayment);
 
-// ⚠️ Use raw body for Paystack webhook to validate signature later if needed
+// Paystack callback (for frontend redirection or confirmation)
 router.post(
   "/callback",
   bodyParser.raw({ type: "application/json" }),
   (req, res, next) => {
     try {
-      req.body = JSON.parse(req.body.toString()); // manually parse JSON
+      req.body = JSON.parse(req.body.toString());
     } catch (err) {
-      console.error("Error parsing Paystack webhook body", err);
+      console.error("Error parsing Paystack callback:", err);
     }
     next();
   },
