@@ -8,7 +8,7 @@ const Home = () => {
       title: "Community-Powered Detection",
       description:
         "Leaverage the power of the community to detect and share phishing threats",
-      image: "http://tiny.cc/vftk001",
+      image: "https://tiny.cc/vftk001",
     },
     {
       title: "API-Ready Threat Data",
@@ -20,7 +20,7 @@ const Home = () => {
       title: "Real-Time Phishing Trends",
       description:
         "Track the latest phishing campaigns and trends in real time",
-      image: "http://tiny.cc/sftk001",
+      image: "https://tiny.cc/sftk001",
     },
   ];
 
