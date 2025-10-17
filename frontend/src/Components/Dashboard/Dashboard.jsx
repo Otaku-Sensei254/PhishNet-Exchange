@@ -194,7 +194,7 @@ const Dashboard = () => {
                 const amount = plan === "pro" ? 499 : 3000;
                 try {
                   const res = await fetch(
-                    `${process.env.REACT_APP_API_URL}/api/payment/initiate`,
+                    `${process.env.REACT_APP_API_URL}/api/payment/initiate`||`/payment/initiate`,
                     {
                       method: "POST",
                       headers: {
