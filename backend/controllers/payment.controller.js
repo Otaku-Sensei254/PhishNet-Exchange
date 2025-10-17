@@ -22,6 +22,7 @@ export const initializePayment = async (req, res) => {
 
     // Initialize Paystack transaction
     const paymentUrl = await initializePaystackTransaction({
+      userId,
       email,
       amount,
       reference: paymentReference,
