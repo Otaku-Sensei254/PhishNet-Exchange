@@ -16,10 +16,7 @@ const PaymentSuccess = () => {
 
       try {
         const res = await fetch(
-          `${
-            process.env.REACT_APP_API_URL ||
-            "https://phishnet-exchangemk2.onrender.com"
-          }/api/payment/verify`,
+          `${process.env.REACT_APP_API_URL}/api/payment/verify`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
