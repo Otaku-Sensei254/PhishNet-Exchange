@@ -8,10 +8,27 @@ import bodyParser from "body-parser";
 
 const router = express.Router();
 
-// Initialize user payment (called by frontend)
+// 🟢 Initialize user payment (called by frontend)
 router.post("/initiate", initializePayment);
 
-// Paystack callback (for frontend redirection or confirmation)
+// 🟢 Paystack redirect (GET) — when user returns from checkout
+router.get("/callback", async (req, res) => {
+  const { reference } = req.query;
+
+  if (!reference) {
+    return res.status(400).send("Missing payment reference");
+  }
+
+  console.log(`🔗 Paystack redirected with reference: ${reference}`);
+
+  // Optionally, you can verify payment here (recommended)
+  // Then redirect user to your frontend success page
+  return res.redirect(
+    `https://phishnetexchange.vercel.app/payment-success?ref=${reference}`
+  );
+});
+
+// 🟢 Paystack webhook (POST) — for Paystack to send confirmation events
 router.post(
   "/callback",
   bodyParser.raw({ type: "application/json" }),
