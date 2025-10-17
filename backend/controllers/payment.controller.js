@@ -96,25 +96,62 @@ export const handlePaystackCallback = async (req, res) => {
 //=====================VERIFY PAYMENT FUNCTION======================
 export const verifyPaystackPayment = async (req, res) => {
   const { reference } = req.body;
-  if (!reference) return res.status(400).json({ msg: "Missing reference" });
+
+  if (!reference) {
+    console.warn("⚠️ Missing payment reference in request");
+    return res.status(400).json({ msg: "Missing payment reference" });
+  }
 
   try {
-    const verify = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
-      headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
-    });
+    console.log("🔍 Verifying Paystack payment for reference:", reference);
 
-    if (verify.data.data.status === "success") {
-      await pool.query(
-        `UPDATE users SET plan_paid = TRUE, subscription_expires = $1 WHERE payment_reference = $2`,
-        [new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), reference]
+    // 1️⃣ Verify payment from Paystack API
+    const verify = await axios.get(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
+      }
+    );
+
+    const data = verify.data?.data;
+    if (!data) {
+      console.error("❌ Invalid Paystack verification response:", verify.data);
+      return res.status(500).json({ msg: "Invalid response from Paystack" });
+    }
+
+    // 2️⃣ Check payment status
+    if (data.status === "success") {
+      const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+      const result = await pool.query(
+        `UPDATE users 
+         SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL
+         WHERE payment_reference = $2
+         RETURNING email, plan_paid, subscription_expires`,
+        [expiryDate, reference]
       );
 
-      res.status(200).json({ success: true, message: "Payment verified and plan updated" });
-    } else {
-      res.status(400).json({ success: false, message: "Payment not successful" });
+      if (result.rows.length === 0) {
+        console.warn("⚠️ No user found with that reference in DB");
+        return res.status(404).json({ msg: "User not found for this reference" });
+      }
+
+      console.log(`✅ Payment verified for ${result.rows[0].email}`);
+      return res.status(200).json({
+        success: true,
+        message: "Payment verified successfully",
+        user: result.rows[0],
+      });
     }
-  } catch (err) {
-    console.error("❌ Paystack verify error:", err.response?.data || err.message);
-    res.status(500).json({ msg: "Error verifying payment" });
+
+    // 3️⃣ If payment was not successful
+    console.warn(`❌ Payment verification failed for ${reference}`);
+    return res.status(400).json({ msg: "Payment not successful" });
+  } catch (error) {
+    console.error(
+      "💥 Payment verification error:",
+      error.response?.data || error.message
+    );
+    return res.status(500).json({ msg: "Error verifying payment" });
   }
 };

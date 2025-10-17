@@ -44,5 +44,4 @@ router.post(
   handlePaystackCallback
 );
 router.post("/verify", verifyPaystackPayment);
-
 export default router;
