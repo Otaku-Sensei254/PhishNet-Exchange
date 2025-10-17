@@ -43,7 +43,7 @@ function LeakCheckForm() {
       setResults(data.matches || []);
 
       // 2️⃣ Save scan history to MongoDB
-      await fetch(`${process.env.REACT_APP_API_URL}/scan/save`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/scan/save`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
