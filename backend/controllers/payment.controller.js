@@ -96,52 +96,25 @@ export const handlePaystackCallback = async (req, res) => {
 //=====================VERIFY PAYMENT FUNCTION======================
 export const verifyPaystackPayment = async (req, res) => {
   const { reference } = req.body;
-
-  if (!reference) {
-    return res.status(400).json({ msg: "Missing reference" });
-  }
+  if (!reference) return res.status(400).json({ msg: "Missing reference" });
 
   try {
-    const verifyRes = await axios.get(
-      `https://api.paystack.co/transaction/verify/${reference}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        },
-      }
-    );
+    const verify = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+      headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
+    });
 
-    const data = verifyRes.data.data;
-
-    if (data.status === "success") {
-      const result = await pool.query(
-        "SELECT * FROM users WHERE payment_reference = $1",
-        [reference]
-      );
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({ msg: "User not found" });
-      }
-
-      const user = result.rows[0];
-      const subscriptionExpires = new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
-      );
-
+    if (verify.data.data.status === "success") {
       await pool.query(
-        `UPDATE users 
-         SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL 
-         WHERE id = $2`,
-        [subscriptionExpires, user.id]
+        `UPDATE users SET plan_paid = TRUE, subscription_expires = $1 WHERE payment_reference = $2`,
+        [new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), reference]
       );
 
-      console.log(`✅ Verified and activated subscription for ${user.email}`);
-      return res.json({ success: true });
+      res.status(200).json({ success: true, message: "Payment verified and plan updated" });
     } else {
-      return res.status(400).json({ success: false, msg: "Payment failed" });
+      res.status(400).json({ success: false, message: "Payment not successful" });
     }
-  } catch (error) {
-    console.error("Verification error:", error.response?.data || error.message);
-    return res.status(500).json({ msg: "Error verifying payment" });
+  } catch (err) {
+    console.error("❌ Paystack verify error:", err.response?.data || err.message);
+    res.status(500).json({ msg: "Error verifying payment" });
   }
 };

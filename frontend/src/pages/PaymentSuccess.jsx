@@ -67,7 +67,8 @@ const PaymentSuccess = () => {
             <h1>✅ Payment Successful!</h1>
             <p className="thank-you-text">
               Thank you for upgrading to <strong>PhishNet Exchange Pro</strong>!
-              <br /> Your subscription is now active for the next <b>30 days</b>.
+              <br /> Your subscription is now active for the next <b>30 days</b>
+              .
             </p>
 
             {reference && (
