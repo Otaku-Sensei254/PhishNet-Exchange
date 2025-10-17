@@ -34,7 +34,7 @@ const Login = () => {
 
         // Fetch user details
         const userRes = await fetch(
-          `${process.env.REACT_APP_API_URL}/auth/user/${decoded.id}`
+          `${process.env.REACT_APP_API_URL}/api/auth/user/${decoded.id}`
         );
         const userData = await userRes.json();
 
