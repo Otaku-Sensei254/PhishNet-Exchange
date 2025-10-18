@@ -121,24 +121,21 @@ const Dashboard = () => {
           <img src={user?.profile_pic} alt="icon" className="left-Icon" />
           👤 Profile
         </h2>
-        {user ? (
-          <ul>
-            <li>
-              <strong>Username:</strong> {user.username}
-            </li>
-            <li>
-              <strong>Email:</strong> {user.email}
-            </li>
-            <li>
-              <strong>Subscription:</strong>{" "}
-              <span className={`sub-tier ${user.plan.toLowerCase()}`}>
-                {user.plan}
-              </span>
-            </li>
-          </ul>
-        ) : (
-          <p>Loading user info...</p>
-        )}
+       {user ? (
+  <ul>
+    <li><strong>Username:</strong> {user.username}</li>
+    <li><strong>Email:</strong> {user.email}</li>
+    <li>
+      <strong>Subscription:</strong>{" "}
+      <span className={`sub-tier ${user?.plan ? user.plan.toLowerCase() : "free"}`}>
+        {user?.plan || "Free"}
+      </span>
+    </li>
+  </ul>
+) : (
+  <p>Loading user info...</p>
+)}
+
 
         {/* Monitored Accounts */}
         <div className="monitor-section styled-box">
