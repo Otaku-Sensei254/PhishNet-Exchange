@@ -27,7 +27,7 @@ const Home = () => {
   return (
     <div className="Container">
       <div className="home-Container">
-        <div className="top">
+        <div className="Top">
          
           <h1>Crowd-Powered Phishing Intelligence in Real Time</h1>
           <p>

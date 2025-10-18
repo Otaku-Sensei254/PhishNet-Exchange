@@ -14,24 +14,28 @@
 }
 
 /* TOP SECTION */
-.top {
+.Top {
+  
+  align-items: center;
   text-align: center;
   max-width: 800px;
   padding: 20px;
 }
 
-.top h1 {
+.Top h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
 }
 
-.top p {
+.Top p {
   font-size: 1.25rem;
   color: rgb(117, 113, 113);
   margin-bottom: 1.5rem;
 }
 
 .CTAs {
+  position: relative;
+  
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
@@ -105,11 +109,11 @@
 
 /* MEDIA QUERIES */
 @media (max-width: 768px) {
-  .top h1 {
+  .Top h1 {
     font-size: 2rem;
   }
 
-  .top p {
+  .Top p {
     font-size: 1rem;
     padding: 0 10px;
   }
@@ -129,7 +133,7 @@
     padding: 1rem;
   }
 
-  .top h1 {
+  .Top h1 {
     font-size: 1.75rem;
   }
 
