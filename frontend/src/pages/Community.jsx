@@ -144,12 +144,15 @@ const CommunityPage = () => {
           <p>Total Contributors: {topContributors.length}</p>
           <p>Active Discussions: {suggestedDiscussions.length}</p>
         </div>
+          <h3>💬 Join Community Talks</h3>
+        <div className="talks">
         <Link to="/suggest">
           <button className="suggest">Suggest Topic</button>
         </Link>
         <Link to="/discussions">
           <button className="suggest">Discussions</button>
         </Link>
+        </div>
       </div>
     </div>
   );

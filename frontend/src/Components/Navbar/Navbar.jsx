@@ -55,7 +55,7 @@ const Navbar = () => {
         <div className={`nav-links ${menuOpen ? "open" : ""}`}>
           <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
           <Link to="/browse-iocs" onClick={() => setMenuOpen(false)}>IOCs</Link>
-          <Link to="/submit-ioc" onClick={() => setMenuOpen(false)}>Submit Indicator</Link>
+          <Link to="/submit-threat" onClick={() => setMenuOpen(false)}>Submit Threat</Link>
           <Link to="/community" onClick={() => setMenuOpen(false)}>Community</Link>
           <Link to="/pricing" onClick={() => setMenuOpen(false)}>Packages</Link>
 
