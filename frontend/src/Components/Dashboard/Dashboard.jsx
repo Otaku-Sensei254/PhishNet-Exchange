@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // ✅ Import styles
+import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from "react-router-dom";
 import LeakCheckForm from "../LeakCheckFrm/Leakcheck";
 import "./Dashboard.css";
 import { UserContext } from "../../context/userContext";
+
 const Dashboard = () => {
-  const [user, setUser] = useState(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [history, setHistory] = useState([]);
   const [autoScanEnabled, setAutoScanEnabled] = useState(false);
   const [scanFrequency, setScanFrequency] = useState("daily");
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
+  const location = useLocation();
 
-  const storedPlan = localStorage.getItem("userPlan");
-  // Fetch user profile
+  // ✅ Fetch user profile (runs again when route changes)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -23,59 +25,57 @@ const Dashboard = () => {
       const decoded = jwtDecode(token);
       fetch(`${process.env.REACT_APP_API_URL}/api/auth/user/${decoded.id}`)
         .then((res) => res.json())
-        .then((data) =>
-          setUser({
-            ...data.user,
-            subscription: data.user?.plan || "FREE",
-          })
-        )
+        .then((data) => {
+          if (data?.user) {
+            setUser({
+              ...data.user,
+              subscription: data.user.plan_paid ? data.user.plan : "FREE",
+            });
+            localStorage.setItem("userPlan", data.user.plan || "FREE");
+          }
+        })
         .catch((err) => console.error("Error fetching user info:", err));
     } catch (err) {
       console.error("Token decode error:", err);
     }
-  }, []);
+  }, [location, setUser]); // 👈 rerun when URL changes
 
-  // Fetch scan history
+  // ✅ Fetch scan history
   useEffect(() => {
     if (user) {
       const token = localStorage.getItem("token");
-
       fetch(`${process.env.REACT_APP_API_URL}/api/scan/history`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.success) {
-            setHistory(data.histories);
-          }
+          if (data.success) setHistory(data.histories);
         })
         .catch(console.error);
     }
   }, [user]);
 
-  // Auto scan toggle
+  // ✅ Auto scan toggle
   const toggleAutoScan = () => {
     setAutoScanEnabled(!autoScanEnabled);
     toast.info(`Auto Scan ${!autoScanEnabled ? "enabled" : "disabled"}`);
   };
 
-  // Frequency change
   const handleScanFrequencyChange = (e) => {
     setScanFrequency(e.target.value);
     toast.success(`Scan frequency set to ${e.target.value}`);
   };
 
-  // Add monitored email/phone
+  // ✅ Can user add more monitored items?
   const canAddMore = () => {
     if (!user) return false;
-    const isFree = user.plan === "free";
+    const isFree = user.subscription?.toLowerCase() === "free";
     const emailLimit = user.monitoredEmails?.length || 0;
     const phoneLimit = user.monitoredPhones?.length || 0;
     return !isFree || (emailLimit < 1 && phoneLimit < 1);
   };
 
+  // ✅ Add monitored email/phone
   const handleAddMonitor = async (e) => {
     e.preventDefault();
     if (!canAddMore()) {
@@ -85,20 +85,14 @@ const Dashboard = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/monitor/add`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            email: newEmail,
-            phone: newPhone,
-          }),
-        }
-      );
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/monitor/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email: newEmail, phone: newPhone }),
+      });
 
       const data = await res.json();
       if (res.ok) {
@@ -117,9 +111,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-grid">
-      {/* Toastify Container (must be inside JSX root) */}
-
-      {/* LEFT PANEL */}
       <div className="dashboard-left">
         <h2>
           <img src={user?.profile_pic} alt="icon" className="left-Icon" />
@@ -137,10 +128,10 @@ const Dashboard = () => {
               <strong>Subscription:</strong>{" "}
               <span
                 className={`sub-tier ${
-                  user?.plan ? user.plan.toLowerCase() : storedPlan || "free"
+                  user?.subscription?.toLowerCase() || "free"
                 }`}
               >
-                {user?.plan || storedPlan || "Free"}
+                {user.subscription || "Free"}
               </span>
             </li>
           </ul>
@@ -153,14 +144,10 @@ const Dashboard = () => {
           <h4>📡 Monitored Accounts</h4>
           <ul className="monitored-list">
             {user?.monitoredEmails?.map((email, i) => (
-              <li key={i}>
-                📧 <strong>{email}</strong>
-              </li>
+              <li key={i}>📧 <strong>{email}</strong></li>
             ))}
             {user?.monitoredPhones?.map((phone, i) => (
-              <li key={i}>
-                📱 <strong>{phone}</strong>
-              </li>
+              <li key={i}>📱 <strong>{phone}</strong></li>
             ))}
           </ul>
 
@@ -184,7 +171,7 @@ const Dashboard = () => {
         </div>
 
         {/* Upgrade Plan */}
-        {user?.subscription === "free" && (
+        {user?.subscription === "FREE" && (
           <div className="upgrade-plan-section styled-box">
             <h4>🚀 Upgrade Your Plan</h4>
             <select
@@ -202,16 +189,13 @@ const Dashboard = () => {
                 const amount = plan === "pro" ? 499 : 3000;
                 try {
                   const res = await fetch(
-                    `${process.env.REACT_APP_API_URL}/api/payment/initiate` ||
-                      `/payment/initiate`,
+                    `${process.env.REACT_APP_API_URL}/api/payment/initiate`,
                     {
                       method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
+                      headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
                         email: user.email,
-                        userId: user.id, // ✅ always use Postgres ID
+                        userId: user.id,
                         plan,
                         amount,
                       }),
@@ -245,7 +229,7 @@ const Dashboard = () => {
       <div className="dashboard-right">
         <h2>🧠 History & Automation</h2>
 
-        {user?.subscription !== "free" ? (
+        {user?.subscription !== "FREE" ? (
           <>
             <div className="auto-scan-toggle">
               <button
@@ -278,7 +262,7 @@ const Dashboard = () => {
         )}
 
         <ToastContainer position="top-right" autoClose={3000} />
-        {/* Scan History */}
+
         <div className="log-section">
           <h3>Search History</h3>
           <ul>
@@ -291,27 +275,6 @@ const Dashboard = () => {
                       {scan.matches.map((match, i) => (
                         <li key={i}>
                           <strong>{match.field}</strong>: {match.value}
-                          <br />
-                          {match.sources && match.sources.length > 0 ? (
-                            <>
-                              <strong>Sources:</strong>
-                              <ul>
-                                {match.sources.map((src, j) => (
-                                  <li key={j}>
-                                    <a
-                                      href={src}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                    >
-                                      {src}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            </>
-                          ) : (
-                            <p>No sources found</p>
-                          )}
                         </li>
                       ))}
                     </ul>
