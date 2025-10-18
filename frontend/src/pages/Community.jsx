@@ -26,6 +26,26 @@ const CommunityPage = () => {
     fetchSuggestions();
   }, []);
 
+  // Close sidebar when clicking on overlay
+  const handleOverlayClick = (e) => {
+    if (e.target.classList.contains('sidebar-overlay')) {
+      setShowSidebar(false);
+    }
+  };
+
+  // Prevent body scroll when sidebar is open
+  useEffect(() => {
+    if (showSidebar) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showSidebar]);
+
   const filteredPosts = posts.filter((post) => {
     const term = search.toLowerCase();
     return (
@@ -57,6 +77,14 @@ const CommunityPage = () => {
         ☰
       </button>
 
+      {/* Overlay for mobile */}
+      {showSidebar && (
+        <div 
+          className="sidebar-overlay" 
+          onClick={handleOverlayClick}
+        ></div>
+      )}
+
       <div className="community-main">
         <div className="top">
           <input
@@ -66,8 +94,7 @@ const CommunityPage = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
           <Link to="/submit-threat" className="post-button">
-          Post Threat{" "}
-          <FaSignsPost/>
+            Post Threat <FaSignsPost/>
           </Link>
         </div>
         {filteredPosts.map((post) => (
@@ -111,6 +138,13 @@ const CommunityPage = () => {
       </div>
 
       <div className={`sidebar ${showSidebar ? "show" : ""}`}>
+        <button 
+          className="close-sidebar"
+          onClick={() => setShowSidebar(false)}
+        >
+          ✕
+        </button>
+        
         <div className="sidebar-section">
           <h3>🏷️ Popular Tags</h3>
           {getPopularTags().map((tag, i) => (
@@ -138,20 +172,24 @@ const CommunityPage = () => {
             </div>
           ))}
         </div>
+        
         <div className="sidebar-section">
           <h3>📈 Community Stats</h3>
           <p>Total Posts: {posts.length}</p>
           <p>Total Contributors: {topContributors.length}</p>
           <p>Active Discussions: {suggestedDiscussions.length}</p>
         </div>
+        
+        <div className="sidebar-section">
           <h3>💬 Join Community Talks</h3>
-        <div className="talks">
-        <Link to="/suggest">
-          <button className="suggest">Suggest Topic</button>
-        </Link>
-        <Link to="/discussions">
-          <button className="suggest">Discussions</button>
-        </Link>
+          <div className="talks">
+            <Link to="/suggest" onClick={() => setShowSidebar(false)}>
+              <button className="suggest">Suggest Topic</button>
+            </Link>
+            <Link to="/discussions" onClick={() => setShowSidebar(false)}>
+              <button className="suggest">Discussions</button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

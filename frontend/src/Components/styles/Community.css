@@ -17,6 +17,7 @@
   border: none;
   border-radius: 5px;
   margin-bottom: 10px;
+  z-index: 101;
 }
 
 .community-main {
@@ -27,7 +28,6 @@
 .search-bar {
   width: 100%;
   padding: 12px;
-  
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -66,16 +66,17 @@
 .content {
   margin-bottom: 12px;
 }
-.top{
+
+.top {
   display: flex;
   flex-wrap: wrap;
   justify-items: center;
   gap: 20px;
   align-items: center;
-  
   width: 100%;
 }
-.post-button{
+
+.post-button {
   background: red;
   padding: 4px 8px;
   border-radius: 15px;
@@ -84,6 +85,7 @@
   border: 2px solid transparent;
   cursor: pointer;
 }
+
 .post-image {
   width: 100%;
   max-height: 300px;
@@ -158,6 +160,7 @@
   margin-bottom: 6px;
   color: #333;
 }
+
 .suggest {
   padding: 4px;
   border-radius: 12px;
@@ -169,6 +172,7 @@
   border: 2px solid transparent;
   cursor: pointer;
 }
+
 .suggest:hover {
   background-color: white;
   color: #007bff;
@@ -177,6 +181,7 @@
   border-radius: 20px;
   transition: all 0.3s ease-in-out;
 }
+
 .contributor {
   display: flex;
   align-items: center;
@@ -189,58 +194,102 @@
   height: 30px;
 }
 
-.talks{
+.talks {
   display: flex;
-  
   gap: 10px;
-  margin-top: 15px; 
+  margin-top: 15px;
 }
+
+.close-sidebar {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  z-index: 102;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 98;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .community-wrapper {
     flex-direction: column;
+    padding: 15px;
   }
 
   .toggle-sidebar {
     width: fit-content;
     display: inline-block;
     position: relative;
-    left: 40rem;
+    left: 0;
+    margin-bottom: 15px;
   }
 
   .sidebar {
     display: none;
-    position: absolute;
-    top: 60px;
-    right: 20px;
+    position: fixed;
+    top: 0;
+    right: 0;
     width: 85%;
+    height: 100vh;
     z-index: 100;
     max-width: 350px;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    border-radius: 0;
   }
 
   .sidebar.show {
     display: block;
-    animation: slideIn 0.3s ease-in-out;
+    transform: translateX(0);
   }
 
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
+  .close-sidebar {
+    display: block;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .community-main {
+    width: 100%;
   }
 }
-@media (max-width:320px){
-  .toggle-sidebar{
-    left: 15rem;
+
+@media (max-width: 320px) {
+  .toggle-sidebar {
+    left: 0;
     position: relative;
   }
-  .post-card{
+  
+  .post-card {
     position: relative;
-    right: 1rem;
+    right: 0;
+    width: 100%;
+  }
+  
+  .sidebar {
+    width: 100%;
+    max-width: none;
+  }
+  
+  .talks {
+    flex-direction: column;
   }
 }

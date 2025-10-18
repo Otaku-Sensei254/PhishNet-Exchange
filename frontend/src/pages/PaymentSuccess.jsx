@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 import "../Components/styles/PaymentStatus.css";
 import shieldLogo from "../assets/shield.jpg";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const reference =
-  searchParams.get("reference") ||
-  searchParams.get("trxref") ||
-  searchParams.get("ref");
+    searchParams.get("reference") ||
+    searchParams.get("trxref") ||
+    searchParams.get("ref");
 
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState(null);
+
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -33,6 +36,17 @@ const PaymentSuccess = () => {
         if (res.ok && data.success) {
           console.log("✅ Payment verified successfully");
           setVerified(true);
+
+          // ✅ Refresh user data in context
+          const token = localStorage.getItem("token");
+          if (token) {
+            const decoded = JSON.parse(atob(token.split(".")[1]));
+            const userRes = await fetch(
+              `${process.env.REACT_APP_API_URL}/api/auth/user/${decoded.id}`
+            );
+            const userData = await userRes.json();
+            setUser(userData.user);
+          }
         } else {
           console.warn("⚠️ Payment verification failed:", data.msg);
           setError(data.msg || "Verification failed");
@@ -46,7 +60,7 @@ const PaymentSuccess = () => {
     };
 
     verifyPayment();
-  }, [reference]);
+  }, [reference, setUser]);
 
   return (
     <div className="payment-status-container">
@@ -71,8 +85,7 @@ const PaymentSuccess = () => {
             <h1>✅ Payment Successful!</h1>
             <p className="thank-you-text">
               Thank you for upgrading to <strong>PhishNet Exchange Pro</strong>!
-              <br /> Your subscription is now active for the next <b>30 days</b>
-              .
+              <br /> Your subscription is now active for the next <b>30 days</b>.
             </p>
 
             {reference && (
