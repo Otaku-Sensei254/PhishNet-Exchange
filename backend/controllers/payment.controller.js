@@ -1,4 +1,4 @@
-import axios from "axios"; // ✅ You forgot this import
+import axios from "axios";
 import { initializePaystackTransaction } from "../utils/paystack.js";
 import pool from "../config/neon.js";
 
@@ -13,7 +13,7 @@ export const initializePayment = async (req, res) => {
   try {
     const paymentReference = `phishnet-${userId}-${Date.now()}`;
 
-    // Save payment reference and plan in Postgres
+    // 1️⃣ Save payment reference and plan in users table
     await pool.query(
       `UPDATE users 
        SET payment_reference = $1, plan = $2 
@@ -21,13 +21,22 @@ export const initializePayment = async (req, res) => {
       [paymentReference, plan, userId]
     );
 
-    // Initialize Paystack transaction
+    // 2️⃣ Insert into payments table (create history)
+    await pool.query(
+      `INSERT INTO payments (user_id, email, plan, amount, reference, status, created_at)
+       VALUES ($1, $2, $3, $4, $5, 'pending', NOW())
+       ON CONFLICT (reference)
+       DO UPDATE SET amount = EXCLUDED.amount, plan = EXCLUDED.plan, status = 'pending', updated_at = NOW()`,
+      [userId, email, plan, amount, paymentReference]
+    );
+
+    // 3️⃣ Initialize Paystack transaction
     const paymentUrl = await initializePaystackTransaction({
       userId,
       email,
       amount,
       reference: paymentReference,
-      callback_url: `${process.env.FRONTEND_URL}/payment-success`, // ✅ No ?ref here
+      callback_url: `${process.env.FRONTEND_URL}/payment-success?ref=${paymentReference}`,
     });
 
     return res.status(200).json({ paymentUrl });
@@ -69,11 +78,20 @@ export const handlePaystackCallback = async (req, res) => {
     if (data.status === "success") {
       const subscriptionExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
+      // ✅ Update user subscription
       await pool.query(
         `UPDATE users 
          SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL 
          WHERE id = $2`,
         [subscriptionExpires, user.id]
+      );
+
+      // ✅ Update payment record
+      await pool.query(
+        `UPDATE payments 
+         SET status = 'success', updated_at = NOW() 
+         WHERE reference = $1`,
+        [reference]
       );
 
       console.log(`✅ Payment verified for ${user.email} (${reference})`);
@@ -82,6 +100,14 @@ export const handlePaystackCallback = async (req, res) => {
         `${process.env.FRONTEND_URL}/payment-success?reference=${reference}`
       );
     } else {
+      // ❌ Mark failed
+      await pool.query(
+        `UPDATE payments 
+         SET status = 'failed', updated_at = NOW() 
+         WHERE reference = $1`,
+        [reference]
+      );
+
       console.warn(`❌ Payment failed for ${reference}`);
       return res.redirect(
         `${process.env.FRONTEND_URL}/payment-failed?reference=${reference}`
@@ -105,7 +131,7 @@ export const verifyPaystackPayment = async (req, res) => {
   try {
     console.log("🔍 Verifying Paystack payment for reference:", reference);
 
-    // 1️⃣ Verify with Paystack API
+    // Verify with Paystack API
     const verify = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -119,23 +145,30 @@ export const verifyPaystackPayment = async (req, res) => {
       return res.status(500).json({ msg: "Invalid response from Paystack" });
     }
 
-    // 2️⃣ If success → update DB
     if (data.status === "success") {
       const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-     const result = await pool.query(
-  `UPDATE users 
-   SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL
-   WHERE payment_reference = $2
-   RETURNING id, username, email, plan, plan_paid, subscription_expires, profile_pic`,
-  [expiryDate, reference]
-);
-
+      // ✅ Update user
+      const result = await pool.query(
+        `UPDATE users 
+         SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL
+         WHERE payment_reference = $2
+         RETURNING id, username, email, plan, plan_paid, subscription_expires, profile_pic`,
+        [expiryDate, reference]
+      );
 
       if (result.rows.length === 0) {
         console.warn("⚠️ No user found with that reference in DB");
         return res.status(404).json({ msg: "User not found for this reference" });
       }
+
+      // ✅ Update payment
+      await pool.query(
+        `UPDATE payments 
+         SET status = 'success', updated_at = NOW()
+         WHERE reference = $1`,
+        [reference]
+      );
 
       console.log(`✅ Payment verified for ${result.rows[0].email}`);
       return res.status(200).json({
@@ -145,14 +178,16 @@ export const verifyPaystackPayment = async (req, res) => {
       });
     }
 
-    // 3️⃣ If payment failed
+    // ❌ Payment failed
+    await pool.query(
+      `UPDATE payments SET status = 'failed', updated_at = NOW() WHERE reference = $1`,
+      [reference]
+    );
+
     console.warn(`❌ Payment verification failed for ${reference}`);
     return res.status(400).json({ msg: "Payment not successful" });
   } catch (error) {
-    console.error(
-      "💥 Payment verification error:",
-      error.response?.data || error.message
-    );
+    console.error("💥 Payment verification error:", error.response?.data || error.message);
     return res.status(500).json({ msg: "Error verifying payment" });
   }
 };
