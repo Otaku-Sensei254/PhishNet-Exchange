@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { UserContext } from "../context/userContext";
 import "../Components/styles/PaymentStatus.css";
 import shieldLogo from "../assets/shield.jpg";
+import { UserContext } from "../context/userContext";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -11,11 +11,10 @@ const PaymentSuccess = () => {
     searchParams.get("trxref") ||
     searchParams.get("ref");
 
+  const { fetchUser } = useContext(UserContext);
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState(null);
-
-  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -35,18 +34,16 @@ const PaymentSuccess = () => {
 
         if (res.ok && data.success) {
           console.log("✅ Payment verified successfully");
-          setVerified(true);
 
-          // ✅ Refresh user data in context
-          const token = localStorage.getItem("token");
-          if (token) {
-            const decoded = JSON.parse(atob(token.split(".")[1]));
-            const userRes = await fetch(
-              `${process.env.REACT_APP_API_URL}/api/auth/user/${decoded.id}`
-            );
-            const userData = await userRes.json();
-            setUser(userData.user);
+          // ✅ Immediately refresh user info from the backend
+          await fetchUser();
+
+          // Optional: you can store updated plan info locally
+          if (data.user?.plan) {
+            localStorage.setItem("userPlan", data.user.plan);
           }
+
+          setVerified(true);
         } else {
           console.warn("⚠️ Payment verification failed:", data.msg);
           setError(data.msg || "Verification failed");
@@ -60,7 +57,7 @@ const PaymentSuccess = () => {
     };
 
     verifyPayment();
-  }, [reference, setUser]);
+  }, [reference, fetchUser]);
 
   return (
     <div className="payment-status-container">
