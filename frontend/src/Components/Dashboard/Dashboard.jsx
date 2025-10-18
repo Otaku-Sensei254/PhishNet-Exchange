@@ -4,9 +4,9 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // ✅ Import styles
 import LeakCheckForm from "../LeakCheckFrm/Leakcheck";
 import "./Dashboard.css";
-
+import { UserContext } from "../../context/userContext";
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(UserContext);
   const [history, setHistory] = useState([]);
   const [autoScanEnabled, setAutoScanEnabled] = useState(false);
   const [scanFrequency, setScanFrequency] = useState("daily");

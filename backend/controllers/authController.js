@@ -113,13 +113,41 @@ export const login = async (req, res) => {
   }
 };
 
+// controllers/authController.js
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
-    if (!user) return res.status(404).json({ msg: "User not found" });
+    const { id } = req.params;
+    const userId = parseInt(id, 10); // ✅ Ensure it's an integer
 
-    res.json({ user });
+    if (isNaN(userId)) {
+      return res.status(400).json({ msg: "Invalid user ID" });
+    }
+
+    // ✅ Fetch full user data including payment/subscription fields
+    const query = `
+      SELECT 
+        id,
+        username,
+        email,
+        plan,
+        plan_paid,
+        is_verified,
+        subscription_expires,
+        profile_pic
+      FROM users
+      WHERE id = $1
+    `;
+    const result = await pool.query(query, [userId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const user = result.rows[0];
+    return res.status(200).json({ success: true, user });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    console.error("💥 GetUser error:", err);
+    res.status(500).json({ success: false, msg: "Server error fetching user" });
   }
 };
+
