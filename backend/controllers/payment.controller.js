@@ -123,13 +123,14 @@ export const verifyPaystackPayment = async (req, res) => {
     if (data.status === "success") {
       const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-      const result = await pool.query(
-        `UPDATE users 
-         SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL
-         WHERE payment_reference = $2
-         RETURNING email, plan_paid, subscription_expires`,
-        [expiryDate, reference]
-      );
+     const result = await pool.query(
+  `UPDATE users 
+   SET plan_paid = TRUE, subscription_expires = $1, payment_reference = NULL
+   WHERE payment_reference = $2
+   RETURNING id, username, email, plan, plan_paid, subscription_expires, profile_pic`,
+  [expiryDate, reference]
+);
+
 
       if (result.rows.length === 0) {
         console.warn("⚠️ No user found with that reference in DB");

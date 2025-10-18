@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
 
+  const storedPlan = localStorage.getItem("userPlan");
   // Fetch user profile
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -84,17 +85,20 @@ const Dashboard = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/monitor/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: newEmail,
-          phone: newPhone,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/monitor/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email: newEmail,
+            phone: newPhone,
+          }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {
@@ -121,21 +125,28 @@ const Dashboard = () => {
           <img src={user?.profile_pic} alt="icon" className="left-Icon" />
           👤 Profile
         </h2>
-       {user ? (
-  <ul>
-    <li><strong>Username:</strong> {user.username}</li>
-    <li><strong>Email:</strong> {user.email}</li>
-    <li>
-      <strong>Subscription:</strong>{" "}
-      <span className={`sub-tier ${user?.plan ? user.plan.toLowerCase() : "free"}`}>
-        {user?.plan || "Free"}
-      </span>
-    </li>
-  </ul>
-) : (
-  <p>Loading user info...</p>
-)}
-
+        {user ? (
+          <ul>
+            <li>
+              <strong>Username:</strong> {user.username}
+            </li>
+            <li>
+              <strong>Email:</strong> {user.email}
+            </li>
+            <li>
+              <strong>Subscription:</strong>{" "}
+              <span
+                className={`sub-tier ${
+                  user?.plan ? user.plan.toLowerCase() : storedPlan || "free"
+                }`}
+              >
+                {user?.plan || storedPlan || "Free"}
+              </span>
+            </li>
+          </ul>
+        ) : (
+          <p>Loading user info...</p>
+        )}
 
         {/* Monitored Accounts */}
         <div className="monitor-section styled-box">
@@ -191,7 +202,8 @@ const Dashboard = () => {
                 const amount = plan === "pro" ? 499 : 3000;
                 try {
                   const res = await fetch(
-                    `${process.env.REACT_APP_API_URL}/api/payment/initiate`||`/payment/initiate`,
+                    `${process.env.REACT_APP_API_URL}/api/payment/initiate` ||
+                      `/payment/initiate`,
                     {
                       method: "POST",
                       headers: {
