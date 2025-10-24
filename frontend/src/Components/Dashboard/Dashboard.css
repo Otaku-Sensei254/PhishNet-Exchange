@@ -1,29 +1,36 @@
 /* === Dashboard Grid === */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  /* fixed-but-responsive sidebars and a fluid center column */
+  grid-template-columns: minmax(220px, 320px) 1fr minmax(220px, 360px);
   gap: 20px;
   padding: 20px;
   background-color: #f0f2f5;
-  min-height: 100vh;   /* ✅ allow content to grow */
+  min-height: 100vh;
   box-sizing: border-box;
-  align-items: start;  /* ✅ keep top-aligned panels */
+  align-items: start;
+  /* ensure children can shrink inside the grid (prevents overflowing sidebars)
+     important for long words / large images inside panels */
 }
 
 /* === Panel Styling === */
 .dashboard-left,
 .dashboard-center,
 .dashboard-right {
+  flex-direction: column;
+  display: flex;
   background-color: #fff;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow-y: auto;
-  max-height: calc(100vh - 40px); /* ✅ scroll within panels */
+  max-height: calc(100vh - 40px);
+  transition: all 0.3s ease-in-out;
+  /* allow grid items to shrink (prevents sidebars from forcing row wrap) */
+  min-width: 0;
 }
 
-
-/* Custom Scrollbar */
+/* Scrollbars */
 .dashboard-left::-webkit-scrollbar,
 .dashboard-center::-webkit-scrollbar,
 .dashboard-right::-webkit-scrollbar {
@@ -40,7 +47,7 @@
 .dashboard-left h2,
 .dashboard-center h2,
 .dashboard-right h2 {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   margin-bottom: 15px;
   color: #333;
   display: flex;
@@ -49,12 +56,11 @@
 
 /* === Profile Icon === */
 .left-Icon {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 10px;
-  cursor: pointer;
 }
 
 /* === User Info === */
@@ -69,7 +75,7 @@
 
 /* === Subscription Badge === */
 .sub-tier {
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 8px;
   font-weight: bold;
   text-transform: uppercase;
@@ -98,14 +104,9 @@
   margin-top: 20px;
 }
 
-.monitor-section h4 {
-  margin-bottom: 10px;
-  color: #333;
-}
-
 .monitored-list {
   list-style: none;
-  padding-left: 0;
+  padding: 0;
   margin-bottom: 10px;
 }
 .monitored-list li {
@@ -117,7 +118,7 @@
   font-size: 14px;
 }
 
-/* Monitor Form */
+/* === Monitor Form === */
 .monitor-form input {
   display: block;
   margin: 8px 0;
@@ -136,6 +137,7 @@
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
+  transition: background 0.3s;
 }
 .monitor-form button:hover {
   background-color: #008ecc;
@@ -151,41 +153,34 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.upgrade-plan-section h4 {
-  margin-bottom: 0.6rem;
-  color: #6a4e00;
-}
-
 .upgrade-plan-section select,
 .upgrade-plan-section button {
   width: 100%;
   margin-top: 0.5rem;
-  padding: 0.5rem;
-  font-weight: 500;
-  font-size: 0.95rem;
+  padding: 0.6rem;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  font-size: 0.95rem;
 }
 
 .upgrade-plan-section button {
   background-color: #ffb300;
   border: none;
-  color: #fff;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background 0.3s;
 }
 
 .upgrade-plan-section button:hover {
   background-color: #ff9800;
 }
 
-/* === Leak Checker (Center) === */
+/* === Leak Checker Center === */
 .dashboard-center form {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
 .dashboard-center input,
 .dashboard-center button {
   padding: 10px;
@@ -193,15 +188,12 @@
   border: 1px solid #ccc;
   font-size: 1rem;
 }
-
 .dashboard-center button {
   background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
-  transition: background 0.2s;
 }
-
 .dashboard-center button:hover {
   background-color: #0056b3;
 }
@@ -212,7 +204,6 @@
   display: flex;
   justify-content: center;
 }
-
 .animated-toggle {
   padding: 10px 20px;
   background-color: #e0e0e0;
@@ -221,9 +212,8 @@
   border-radius: 25px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
-
 .animated-toggle.on {
   background-color: #3db36b;
   color: white;
@@ -232,7 +222,6 @@
   background-color: #ccc;
 }
 
-/* Frequency Selector */
 .frequency-selector {
   margin-top: 10px;
 }
@@ -243,7 +232,6 @@
   border: 1px solid #ccc;
 }
 
-/* Automation Locked */
 .automation-locked {
   background-color: #fef4f4;
   padding: 10px;
@@ -253,7 +241,7 @@
   margin-top: 15px;
 }
 
-/* History Section */
+/* === History Section === */
 .log-section {
   margin-top: 20px;
 }
@@ -271,17 +259,96 @@
   margin-bottom: 4px;
 }
 
-/* === Responsive Layout === */
-@media screen and (max-width: 900px) {
+/* ============================
+      RESPONSIVE DESIGN
+=============================== */
+
+/* Medium screens (Tablets) */
+@media (max-width: 1100px) {
+  /* keep three-column layout but reduce sidebar widths so center stays visible */
+  .dashboard-grid {
+    grid-template-columns: minmax(180px, 260px) 1fr minmax(160px, 260px);
+  }
+}
+
+/* Small screens (Phones) */
+@media (max-width: 900px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
-    height: auto;
+    gap: 15px;
   }
 
   .dashboard-left,
   .dashboard-center,
   .dashboard-right {
     height: auto;
-    margin-bottom: 20px;
+    max-height: none;
+    margin-bottom: 15px;
+    padding: 15px;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .left-Icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .monitor-form input,
+  .monitor-form button,
+  .upgrade-plan-section select,
+  .upgrade-plan-section button {
+    font-size: 0.9rem;
+  }
+
+  .dashboard-center button {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .auto-scan-toggle {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .animated-toggle {
+    width: 100%;
+  }
+
+  .log-section ul {
+    font-size: 0.85rem;
+  }
+}
+
+/* Very small screens (Under 500px) */
+@media (max-width: 500px) {
+  .dashboard-grid {
+    padding: 10px;
+  }
+  .dashboard-left,
+  .dashboard-center,
+  .dashboard-right {
+    padding: 10px;
+  }
+
+  .dashboard-left h2,
+  .dashboard-right h2 {
+    font-size: 1rem;
+  }
+
+  .monitor-form input,
+  .monitor-form button {
+    padding: 6px;
+  }
+
+  .animated-toggle {
+    font-size: 0.85rem;
+    padding: 8px 10px;
+  }
+
+  .frequency-selector select {
+    font-size: 0.85rem;
   }
 }

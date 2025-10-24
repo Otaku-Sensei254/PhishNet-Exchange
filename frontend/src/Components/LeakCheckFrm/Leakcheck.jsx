@@ -66,7 +66,7 @@ function LeakCheckForm() {
   };
 
   return (
-    <div className="form-container">
+    <div className="Form-container">
       <h2>Leak Checker</h2>
       <form onSubmit={handleSubmit}>
         <input
