@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLocation } from "react-router-dom";
@@ -14,41 +13,47 @@ const Dashboard = () => {
   const [scanFrequency, setScanFrequency] = useState("daily");
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
+  const [upgradePlan, setUpgradePlan] = useState("pro"); // local state for safety
   const location = useLocation();
 
-  // ✅ Fetch user profile (refresh on route change or after payment)
+  /** ✅ Re-fetch user data whenever returning from payment or navigating */
   useEffect(() => {
-    fetchUser();
-  }, [location]);
+    if (fetchUser) fetchUser();
+  }, [location, fetchUser]);
 
-  // ✅ Fetch scan history
+  /** ✅ Fetch scan history once user is available */
   useEffect(() => {
-    if (user) {
-      const token = localStorage.getItem("token");
-      fetch(`${process.env.REACT_APP_API_URL}/api/scan/history`, {
-        headers: { Authorization: `Bearer ${token}` },
+    if (!user) return;
+    const token = localStorage.getItem("token");
+    fetch(`${process.env.REACT_APP_API_URL}/api/scan/history`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setHistory(data.histories);
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) setHistory(data.histories);
-        })
-        .catch(console.error);
-    }
+      .catch((err) => console.error("Error fetching history:", err));
   }, [user]);
 
-  // ✅ Auto scan toggle
-  const toggleAutoScan = () => {
-    if (user?.subscription === "free") {
-      toast.error("Upgrade to Pro or Team to enable auto scan!");
-      return;
-    }
-    setAutoScanEnabled(!autoScanEnabled);
-    toast.info(`Auto Scan ${!autoScanEnabled ? "enabled" : "disabled"}`);
+  /** ✅ Helper: detect if user is on free tier */
+  const isFree = () => {
+    return !user || String(user.subscription || "free").toLowerCase() === "free";
   };
 
-  // ✅ Scan frequency change
+  /** ✅ Auto Scan Toggle — only for Pro/Team users */
+  const toggleAutoScan = () => {
+    if (isFree()) {
+      toast.error("Auto-scan is available only for Pro & Team users.");
+      return;
+    }
+    const newState = !autoScanEnabled;
+    setAutoScanEnabled(newState);
+    toast.info(`Auto Scan ${newState ? "enabled" : "disabled"}`);
+  };
+
+  /** ✅ Scan Frequency — only for Pro/Team users */
   const handleScanFrequencyChange = (e) => {
-    if (user?.subscription === "free") {
+    if (isFree()) {
       toast.error("Only Pro & Team users can change scan frequency.");
       return;
     }
@@ -56,16 +61,16 @@ const Dashboard = () => {
     toast.success(`Scan frequency set to ${e.target.value}`);
   };
 
-  // ✅ Can user add more monitored items?
+  /** ✅ Can user add more monitored items */
   const canAddMore = () => {
     if (!user) return false;
-    const isFree = user.subscription?.toLowerCase() === "free";
-    const emailLimit = user.monitoredEmails?.length || 0;
-    const phoneLimit = user.monitoredPhones?.length || 0;
-    return !isFree || (emailLimit < 1 && phoneLimit < 1);
+    const free = isFree();
+    const emailCount = user.monitoredEmails?.length || 0;
+    const phoneCount = user.monitoredPhones?.length || 0;
+    return !free || (emailCount < 1 && phoneCount < 1);
   };
 
-  // ✅ Add monitored email/phone
+  /** ✅ Add monitored email/phone */
   const handleAddMonitor = async (e) => {
     e.preventDefault();
     if (!canAddMore()) {
@@ -83,8 +88,8 @@ const Dashboard = () => {
         },
         body: JSON.stringify({ email: newEmail, phone: newPhone }),
       });
-
       const data = await res.json();
+
       if (res.ok) {
         setUser(data.updatedUser);
         setNewEmail("");
@@ -99,10 +104,14 @@ const Dashboard = () => {
     }
   };
 
-  // ✅ Handle Upgrade Logic
+  /** ✅ Upgrade Plan (Paystack initialization) */
   const handleUpgrade = async () => {
-    if (!user) return;
-    const plan = user.upgradePlan || "pro";
+    if (!user) {
+      toast.error("Please log in first.");
+      return;
+    }
+
+    const plan = upgradePlan || "pro";
     const amount = plan === "pro" ? 499 : 3000;
 
     try {
@@ -119,7 +128,7 @@ const Dashboard = () => {
 
       const data = await res.json();
       if (res.ok && data.paymentUrl) {
-        window.location.href = data.paymentUrl;
+        window.location.href = data.paymentUrl; // redirect to Paystack
       } else {
         toast.error(data.msg || "Failed to start payment.");
       }
@@ -131,7 +140,9 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-grid">
-      {/* LEFT PANEL */}
+      <ToastContainer position="top-right" autoClose={3000} />
+
+      {/* ================= LEFT PANEL ================= */}
       <div className="dashboard-left">
         <h2>
           <img src={user?.profile_pic} alt="icon" className="left-Icon" />
@@ -148,8 +159,10 @@ const Dashboard = () => {
             </li>
             <li>
               <strong>Subscription:</strong>{" "}
-              <span className={`sub-tier ${user?.subscription?.toLowerCase() || "free"}`}>
-                {user.subscription || "free"}
+              <span
+                className={`sub-tier ${String(user.subscription || "free").toLowerCase()}`}
+              >
+                {user.subscription || "Free"}
               </span>
             </li>
           </ul>
@@ -157,7 +170,7 @@ const Dashboard = () => {
           <p>Loading user info...</p>
         )}
 
-        {/* Monitored Accounts */}
+        {/* === Monitored Accounts === */}
         <div className="monitor-section styled-box">
           <h4>📡 Monitored Accounts</h4>
           <ul className="monitored-list">
@@ -188,34 +201,34 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Upgrade Plan Section */}
-        {user?.subscription === "free" && (
+        {/* === Upgrade Plan (Only for Free users) === */}
+        {isFree() && (
           <div className="upgrade-plan-section styled-box">
             <h4>🚀 Upgrade Your Plan</h4>
+
             <select
-              value={user.upgradePlan || "pro"}
-              onChange={(e) =>
-                setUser((prev) => ({ ...prev, upgradePlan: e.target.value }))
-              }
+              value={upgradePlan}
+              onChange={(e) => setUpgradePlan(e.target.value)}
             >
               <option value="pro">Pro - KES 499/month</option>
               <option value="team">Team - KES 3,000/month</option>
             </select>
+
             <button onClick={handleUpgrade}>Upgrade Now</button>
           </div>
         )}
       </div>
 
-      {/* CENTER PANEL */}
+      {/* ================= CENTER PANEL ================= */}
       <div className="dashboard-center">
         <LeakCheckForm />
       </div>
 
-      {/* RIGHT PANEL */}
+      {/* ================= RIGHT PANEL ================= */}
       <div className="dashboard-right">
         <h2>🧠 History & Automation</h2>
 
-        {user?.subscription !== "free" ? (
+        {!isFree() ? (
           <>
             <div className="auto-scan-toggle">
               <button
@@ -247,8 +260,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        <ToastContainer position="top-right" autoClose={3000} />
-
+        {/* === History === */}
         <div className="log-section">
           <h3>Search History</h3>
           <ul>
@@ -256,7 +268,7 @@ const Dashboard = () => {
               history.map((scan, idx) => (
                 <li key={idx}>
                   <strong>{new Date(scan.timestamp).toLocaleString()}</strong>
-                  {scan.matches.length > 0 ? (
+                  {scan.matches?.length > 0 ? (
                     <ul>
                       {scan.matches.map((match, i) => (
                         <li key={i}>
