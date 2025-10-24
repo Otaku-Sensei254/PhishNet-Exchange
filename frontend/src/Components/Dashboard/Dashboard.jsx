@@ -38,7 +38,7 @@ const Dashboard = () => {
 
   // ✅ Auto scan toggle
   const toggleAutoScan = () => {
-    if (user?.subscription === "FREE") {
+    if (user?.subscription === "Free") {
       toast.error("Upgrade to Pro or Team to enable auto scan!");
       return;
     }
@@ -48,7 +48,7 @@ const Dashboard = () => {
 
   // ✅ Scan frequency change
   const handleScanFrequencyChange = (e) => {
-    if (user?.subscription === "FREE") {
+    if (user?.subscription === "Free") {
       toast.error("Only Pro & Team users can change scan frequency.");
       return;
     }
@@ -189,7 +189,7 @@ const Dashboard = () => {
         </div>
 
         {/* Upgrade Plan Section */}
-        {user?.subscription === "FREE" && (
+        {user?.subscription === "Free" && (
           <div className="upgrade-plan-section styled-box">
             <h4>🚀 Upgrade Your Plan</h4>
             <select
@@ -215,7 +215,7 @@ const Dashboard = () => {
       <div className="dashboard-right">
         <h2>🧠 History & Automation</h2>
 
-        {user?.subscription !== "FREE" ? (
+        {user?.subscription !== "Free" ? (
           <>
             <div className="auto-scan-toggle">
               <button
