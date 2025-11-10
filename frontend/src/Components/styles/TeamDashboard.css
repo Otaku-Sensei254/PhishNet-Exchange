@@ -1,0 +1,46 @@
+.team-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  gap: 20px;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f0f2f5;
+}
+
+.team-left,
+.team-center,
+.team-right {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  overflow-y: auto;
+}
+
+.team-left h2,
+.team-center h2,
+.team-right h2 {
+  margin-bottom: 15px;
+}
+
+.chart-box {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.btn.export {
+  background: #ffb300;
+}

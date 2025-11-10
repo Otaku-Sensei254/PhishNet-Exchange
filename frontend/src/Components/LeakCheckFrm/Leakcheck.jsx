@@ -27,7 +27,6 @@ function LeakCheckForm() {
     const token = localStorage.getItem("token");
 
     try {
-      // 1️⃣ Run leak check
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/check/leak`, {
         method: "POST",
         headers: {
@@ -42,7 +41,6 @@ function LeakCheckForm() {
 
       setResults(data.matches || []);
 
-      // 2️⃣ Save scan history to MongoDB
       await fetch(`${process.env.REACT_APP_API_URL}/api/scan/save`, {
         method: "POST",
         headers: {
@@ -55,7 +53,6 @@ function LeakCheckForm() {
         }),
       });
 
-      // 3️⃣ Show toast notification
       toast.success("✅ Scan completed and saved to history!");
     } catch (err) {
       setError(err.message || "Something went wrong.");
@@ -66,28 +63,15 @@ function LeakCheckForm() {
   };
 
   return (
-    <div className="Form-container">
-      <h2>Leak Checker</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
-        <button type="submit" disabled={loading}>
+    <div className="leak-container">
+      <h2 className="leak-title">Leak Checker</h2>
+
+      <form className="leak-form" onSubmit={handleSubmit}>
+        <input className="leak-input" type="email" name="email" placeholder="Email" onChange={handleChange} />
+        <input className="leak-input" type="text" name="username" placeholder="Username" onChange={handleChange} />
+        <input className="leak-input" type="password" name="password" placeholder="Password" onChange={handleChange} />
+
+        <button className="leak-btn" type="submit" disabled={loading}>
           {loading ? "Checking..." : "Check for Leaks"}
         </button>
       </form>
@@ -100,22 +84,19 @@ function LeakCheckForm() {
           <div className="leak-alert">
             <h3>⚠️ Leak Detected!</h3>
             <p className="leak-warning">
-              One or more of your credentials have been found in public data
-              breaches.
+              One or more of your credentials have been found in public data breaches.
               <br />
-              <strong>
-                Please consider changing your credentials immediately.
-              </strong>
+              <strong>Please update your credentials immediately.</strong>
             </p>
-            <ul>
+
+            <ul className="leak-list">
               {results.map((match, i) => (
-                <li key={i}>
+                <li key={i} className="leak-item">
                   <strong>{match.field}</strong>:{" "}
                   <code className="leaked-value">{match.value}</code>
                   <br />
                   <span>
-                    <strong>Sources:</strong>{" "}
-                    <em>{match.sources?.join(", ")}</em>
+                    <strong>Sources:</strong> <em>{match.sources?.join(", ")}</em>
                   </span>
                   <br />
                   <span>
@@ -132,9 +113,7 @@ function LeakCheckForm() {
         ) : (
           !loading &&
           !error && (
-            <p className="safe-message">
-              ✅ No matches found — you’re safe for now!
-            </p>
+            <p className="safe-message">✅ No matches found — you're safe for now!</p>
           )
         )}
       </div>

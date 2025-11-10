@@ -13,7 +13,10 @@ const Dashboard = () => {
   const [scanFrequency, setScanFrequency] = useState("daily");
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
-  const [upgradePlan, setUpgradePlan] = useState("pro"); // local state for safety
+  // Set default to "pro" - the useEffect will correct it if needed
+  const [upgradePlan, setUpgradePlan] = useState("pro");
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [newMemberEmail, setNewMemberEmail] = useState("");
   const location = useLocation();
 
   /** ✅ Re-fetch user data whenever returning from payment or navigating */
@@ -35,10 +38,46 @@ const Dashboard = () => {
       .catch((err) => console.error("Error fetching history:", err));
   }, [user]);
 
+  /** ✅ Fetch team members if user is on Team plan */
+  useEffect(() => {
+    if (isTeam()) {
+      const token = localStorage.getItem("token");
+      fetch(`${process.env.REACT_APP_API_URL}/api/team/members`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) setTeamMembers(data.members);
+        })
+        .catch((err) => console.error("Error fetching team members:", err));
+    }
+  }, [user]);
+
   /** ✅ Helper: detect if user is on free tier */
   const isFree = () => {
-    return !user || String(user.subscription || "free").toLowerCase() === "free";
+    return !user || String(user.plan || "free").toLowerCase() === "free";
   };
+
+  /** ✅ Helper: detect if user is on Pro tier */
+  const isPro = () => {
+    return user && String(user.plan).toLowerCase() === "pro";
+  };
+
+  /** ✅ Helper: detect if user is on Team tier */
+  const isTeam = () => {
+    return user && String(user.plan).toLowerCase() === "team";
+  };
+  
+  /** ✅ Set default upgrade plan based on user's current plan */
+  useEffect(() => {
+    if (isPro()) {
+      setUpgradePlan("team"); // Pro users can only upgrade to Team
+    } else {
+      setUpgradePlan("pro"); // Free users default to Pro
+    }
+    // We only want to run this when 'user' is loaded or changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   /** ✅ Auto Scan Toggle — only for Pro/Team users */
   const toggleAutoScan = () => {
@@ -48,7 +87,26 @@ const Dashboard = () => {
     }
     const newState = !autoScanEnabled;
     setAutoScanEnabled(newState);
-    toast.info(`Auto Scan ${newState ? "enabled" : "disabled"}`);
+    
+    const token = localStorage.getItem("token");
+    fetch(`${process.env.REACT_APP_API_URL}/api/auto-scan/toggle`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ enabled: newState, frequency: scanFrequency }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          toast.info(`Auto Scan ${newState ? "enabled" : "disabled"}`);
+        }
+      })
+      .catch((err) => {
+        console.error("Error updating auto-scan:", err);
+        toast.error("Failed to update auto-scan settings");
+      });
   };
 
   /** ✅ Scan Frequency — only for Pro/Team users */
@@ -58,7 +116,28 @@ const Dashboard = () => {
       return;
     }
     setScanFrequency(e.target.value);
-    toast.success(`Scan frequency set to ${e.target.value}`);
+    
+    if (autoScanEnabled) {
+      const token = localStorage.getItem("token");
+      fetch(`${process.env.REACT_APP_API_URL}/api/auto-scan/update-frequency`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ frequency: e.target.value }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            toast.success(`Scan frequency set to ${e.target.value}`);
+          }
+        })
+        .catch((err) => {
+          console.error("Error updating frequency:", err);
+          toast.error("Failed to update frequency");
+        });
+    }
   };
 
   /** ✅ Can user add more monitored items */
@@ -104,14 +183,76 @@ const Dashboard = () => {
     }
   };
 
+  /** ✅ Add Team Member */
+  const handleAddTeamMember = async (e) => {
+    e.preventDefault();
+    if (!isTeam()) {
+      toast.error("Only Team plan users can add members.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/team/add-member`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email: newMemberEmail }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setTeamMembers(data.updatedMembers);
+        setNewMemberEmail("");
+        toast.success("Team member added successfully!");
+      } else {
+        toast.error(data.msg || "Failed to add team member.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error adding team member.");
+    }
+  };
+
+  /** ✅ Download PDF Report */
+  const handleDownloadPDF = async () => {
+    if (!isTeam()) {
+      toast.error("Only Team plan users can download PDF reports.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'security-report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success("PDF report downloaded!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error downloading PDF report.");
+    }
+  };
+
   /** ✅ Upgrade Plan (Paystack initialization) */
   const handleUpgrade = async () => {
     if (!user) {
       toast.error("Please log in first.");
       return;
     }
-
-    const plan = upgradePlan || "pro";
+    
+    // Use the state variable 'upgradePlan'
+    const plan = upgradePlan; 
     const amount = plan === "pro" ? 499 : 3000;
 
     try {
@@ -128,7 +269,7 @@ const Dashboard = () => {
 
       const data = await res.json();
       if (res.ok && data.paymentUrl) {
-        window.location.href = data.paymentUrl; // redirect to Paystack
+        window.location.href = data.paymentUrl;
       } else {
         toast.error(data.msg || "Failed to start payment.");
       }
@@ -158,11 +299,11 @@ const Dashboard = () => {
               <strong>Email:</strong> {user.email}
             </li>
             <li>
-              <strong>Subscription:</strong>{" "}
+              <strong>plan:</strong>{" "}
               <span
-                className={`sub-tier ${String(user.subscription || "free").toLowerCase()}`}
+                className={`sub-tier ${String(user.plan || "free").toLowerCase()}`}
               >
-                {user.subscription || "Free"}
+                {user.plan || "Free"}
               </span>
             </li>
           </ul>
@@ -201,20 +342,59 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* === Upgrade Plan (Only for Free users) === */}
-        {isFree() && (
+        {/* === Team Management (Only for Team users) === */}
+        {isTeam() && (
+          <div className="team-management-section styled-box">
+            <h4>👥 Team Management</h4>
+            <div className="team-members-list">
+              {teamMembers.map((member, i) => (
+                <div key={i} className="team-member">
+                  <span>{member.email}</span>
+                  <span className={`member-status ${member.status}`}>
+                    {member.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleAddTeamMember} className="add-member-form">
+              <input
+                type="email"
+                placeholder="Add team member email"
+                value={newMemberEmail}
+                onChange={(e) => setNewMemberEmail(e.target.value)}
+                required
+              />
+              <button type="submit">Add Member</button>
+            </form>
+            <button onClick={handleDownloadPDF} className="download-pdf-btn">
+              📄 Download PDF Report
+            </button>
+          </div>
+        )}
+
+        {/* === Upgrade Plan (Show for Free AND Pro users) === */}
+        {(isFree() || isPro()) && (
           <div className="upgrade-plan-section styled-box">
             <h4>🚀 Upgrade Your Plan</h4>
-
             <select
               value={upgradePlan}
               onChange={(e) => setUpgradePlan(e.target.value)}
             >
-              <option value="pro">Pro - KES 499/month</option>
-              <option value="team">Team - KES 3,000/month</option>
+              {/* Free users see both options */}
+              {isFree() && (
+                <>
+                  <option value="pro">Pro - KES 499/month</option>
+                  <option value="team">Team - KES 3,000/month</option>
+                </>
+              )}
+              {/* Pro users only see the Team option */}
+              {isPro() && (
+                <option value="team">Team - KES 3,000/month</option>
+              )}
             </select>
-
-            <button onClick={handleUpgrade}>Upgrade Now</button>
+            <button onClick={handleUpgrade}>
+              {isFree() ? "Upgrade Now" : "Upgrade to Team"}
+            </button>
           </div>
         )}
       </div>
@@ -222,14 +402,45 @@ const Dashboard = () => {
       {/* ================= CENTER PANEL ================= */}
       <div className="dashboard-center">
         <LeakCheckForm />
+        
+        {/* Analytics Charts for Team Users */}
+        {isTeam() && (
+          <div className="analytics-section">
+            <h3>📊 Security Analytics</h3>
+            <div className="charts-grid">
+              <div className="chart-container">
+                <h4>Leak Types</h4>
+                <div className="chart-placeholder">
+                  {/* Replace with actual chart component */}
+                  Pie Chart - Leak Distribution
+                </div>
+              </div>
+              <div className="chart-container">
+                <h4>Scan Activity</h4>
+                <div className="chart-placeholder">
+                  {/* Replace with actual chart component */}
+                  Line Chart - Weekly Scans
+                </div>
+              </div>
+              <div className="chart-container">
+                <h4>Team Activity</h4>
+                <div className="chart-placeholder">
+                  {/* Replace with actual chart component */}
+                  Bar Chart - Member Contributions
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ================= RIGHT PANEL ================= */}
       <div className="dashboard-right">
         <h2>🧠 History & Automation</h2>
 
-        {!isFree() ? (
-          <>
+        {/* Auto Scan Section - Available for Pro & Team */}
+        {(isPro() || isTeam()) ? (
+          <div className="auto-scan-section">
             <div className="auto-scan-toggle">
               <button
                 className={`animated-toggle ${autoScanEnabled ? "on" : "off"}`}
@@ -252,7 +463,7 @@ const Dashboard = () => {
                 </select>
               </label>
             </div>
-          </>
+          </div>
         ) : (
           <div className="automation-locked">
             <p>🔒 Auto-scan is available for Pro & Team users.</p>
@@ -263,10 +474,10 @@ const Dashboard = () => {
         {/* === History === */}
         <div className="log-section">
           <h3>Search History</h3>
-          <ul>
+          <div className="history-list">
             {history.length > 0 ? (
               history.map((scan, idx) => (
-                <li key={idx}>
+                <div key={idx} className="history-item">
                   <strong>{new Date(scan.timestamp).toLocaleString()}</strong>
                   {scan.matches?.length > 0 ? (
                     <ul>
@@ -279,12 +490,12 @@ const Dashboard = () => {
                   ) : (
                     <p>No leaks found.</p>
                   )}
-                </li>
+                </div>
               ))
             ) : (
               <p>No history yet.</p>
             )}
-          </ul>
+          </div>
         </div>
       </div>
     </div>
