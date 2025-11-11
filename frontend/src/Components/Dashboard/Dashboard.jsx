@@ -38,21 +38,6 @@ const Dashboard = () => {
       .catch((err) => console.error("Error fetching history:", err));
   }, [user]);
 
-  /** ✅ Fetch team members if user is on Team plan */
-  useEffect(() => {
-    if (isTeam()) {
-      const token = localStorage.getItem("token");
-      fetch(`${process.env.REACT_APP_API_URL}/api/team/members`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) setTeamMembers(data.members);
-        })
-        .catch((err) => console.error("Error fetching team members:", err));
-    }
-  }, [user]);
-
   /** ✅ Helper: detect if user is on free tier */
   const isFree = () => {
     return !user || String(user.plan || "free").toLowerCase() === "free";
@@ -64,9 +49,29 @@ const Dashboard = () => {
   };
 
   /** ✅ Helper: detect if user is on Team tier */
-  const isTeam = () => {
+  const isTeam = React.useCallback(() => {
     return user && String(user.plan).toLowerCase() === "team";
-  };
+  }, [user]);
+
+  /** ✅ Fetch team members if user is on Team plan */
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      if (isTeam()) {
+        const token = localStorage.getItem("token");
+        try {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/team/members`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await response.json();
+          if (data.success) setTeamMembers(data.members);
+        } catch (err) {
+          console.error("Error fetching team members:", err);
+        }
+      }
+    };
+
+    fetchTeamMembers();
+  }, [user, isTeam]);
   
   /** ✅ Set default upgrade plan based on user's current plan */
   useEffect(() => {

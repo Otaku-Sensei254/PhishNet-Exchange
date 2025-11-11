@@ -4,7 +4,7 @@ import { UserProvider } from "./context/userContext"; // ✅ Make sure path is c
 import "./index.css";
 
 import Home from "./pages/Home";
-import Submit from "./pages/Submit";
+//import Submit from "./pages/Submit";
 import Browse from "./pages/Browse";
 import Community from "./pages/Community";
 import Login from "./pages/Login";
