@@ -9,22 +9,8 @@ import { Link } from "react-router-dom";
 import { FaSignsPost } from "react-icons/fa6";
 
 const CommunityPage = () => {
-  const [suggestions, setSuggestions] = useState([]);
   const [search, setSearch] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
-
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/suggestions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setSuggestions(data.suggestions || []);
-    };
-
-    fetchSuggestions();
-  }, []);
 
   // Close sidebar when clicking on overlay
   const handleOverlayClick = (e) => {
