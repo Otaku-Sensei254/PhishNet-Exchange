@@ -23,6 +23,7 @@ import SubmitPage from "./pages/Submit";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
 import Post from "./pages/Post";
+import TeamDashboard from "./Components/Dashboard/TeamDashboard";
 
 // Layout component with Navbar and Footer
 const Layout = () => {
@@ -53,6 +54,8 @@ const router = createBrowserRouter([
       { path: "/suggest", element: <Suggestions /> },
       { path: "/pricing", element: <Pricing /> },
       { path: "/posts", element: <Post /> },
+      { path: "/team", element: <TeamDashboard /> },
+
     ],
     
   },
