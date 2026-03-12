@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/submit", verifyToken, submitIOC);
 
 // Fetch latest IOCs
-router.get("/", verifyToken, getIOCs);
+router.get("/", getIOCs);
 
 // Vote on an IOC
 router.post("/vote/:id", verifyToken, voteIOC);

@@ -36,6 +36,7 @@ model User {
   createdAt  DateTime            @default(now())
   threats    Threat[]            // user-submitted threats
   leakChecks LeakCheckRequest[] // checks done by user
+  teamsAdministered Team[]      @relation("TeamAdmin")
 }
 
 model Threat {
@@ -71,4 +72,29 @@ model LeakCheckRequest {
   createdAt  DateTime   @default(now())
 
   user       User       @relation(fields: [userId], references: [id])
+}
+
+model Team {
+  id          String        @id @default(uuid())
+  teamName    String
+  adminId     String
+  admin       User          @relation("TeamAdmin", fields: [adminId], references: [id])
+  members     TeamMember[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([adminId])
+}
+
+model TeamMember {
+  id        String    @id @default(uuid())
+  teamId    String
+  userId    String
+  email     String
+  status    String    @default("pending") // pending, accepted, rejected
+  joinedAt  DateTime  @default(now())
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([teamId])
 }

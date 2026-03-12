@@ -12,6 +12,7 @@ import Payments from "./routes/payment.routes.js";
 import suggestionRoutes from "./routes/suggestionRoutes.js";
 import threatRoutes from "./routes/threat.routes.js";
 import iocRoutes from "./routes/iocRoutes.js";
+import teamRoutes from "./routes/teamRoutes.js";
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ app.use("/api/payment", Payments);
 app.use("/api/suggestions", suggestionRoutes);
 app.use("/api/threats", threatRoutes);
 app.use("/api/iocs", iocRoutes);
+app.use("/api/teams", teamRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
