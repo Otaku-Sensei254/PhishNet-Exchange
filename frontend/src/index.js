@@ -16,7 +16,6 @@ import Navbar from "./Components/Navbar/Navbar";
 import Footer from "./Components/Footer/Footer";
 
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Dashboard from "./Components/Dashboard/Dashboard";
 import Discussions from "./pages/Discussions";
 import IOC from "./pages/IOCs";
 import SubmitPage from "./pages/Submit";
