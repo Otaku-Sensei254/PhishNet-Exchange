@@ -24,6 +24,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
 import Post from "./pages/Post";
 import TeamDashboard from "./Components/Dashboard/TeamDashboard";
+import DashboardWithTeamCheck from "./Components/Dashboard/DashboardWithTeamCheck";
 
 // Layout component with Navbar and Footer
 const Layout = () => {
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
       { path: "/discussions", element: <Discussions /> },
       { path: "/login", element: <Login /> },
       { path: "/signup", element: <Signup /> },
-      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/dashboard", element: <DashboardWithTeamCheck /> },
       { path: "/suggest", element: <Suggestions /> },
       { path: "/pricing", element: <Pricing /> },
       { path: "/posts", element: <Post /> },

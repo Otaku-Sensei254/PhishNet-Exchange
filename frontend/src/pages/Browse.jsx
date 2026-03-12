@@ -16,7 +16,7 @@ function BrowseIOCs() {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/iocs`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       const data = await res.json();
       if (data.success) setIocs(data.iocs);
