@@ -19,12 +19,22 @@ dotenv.config();
 const app = express();
 
 // ✅ FIXED CORS CONFIGURATION
+const allowedOrigins = [
+  'https://phish-net-exchange-mk2.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: [
-    'https://phish-net-exchange-mk2.vercel.app', // Your Vercel frontend
-    'http://localhost:3000', // Local development
-    'http://localhost:5173' // Vite dev server
-  ],
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'), false);
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
