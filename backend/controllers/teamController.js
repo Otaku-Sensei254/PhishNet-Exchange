@@ -1,7 +1,5 @@
 // controllers/teamController.js
-import { PrismaClient } from "../generated/prisma/index.js";
-
-const prisma = new PrismaClient();
+import prisma from "../services/prisma.js";
 
 // ✅ CHECK IF USER EXISTS IN DATABASE (PostgreSQL)
 export const checkUserExists = async (req, res) => {
