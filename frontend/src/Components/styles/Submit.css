@@ -137,6 +137,143 @@
   margin-top: 10px;
 }
 
+/* Result Header */
+.result-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.result-domain {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #222;
+  word-break: break-all;
+}
+.risk-badge {
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.risk-high { background: #fef2f2; color: #dc2626; }
+.risk-medium { background: #fff7ed; color: #ea580c; }
+.risk-low { background: #fefce8; color: #ca8a04; }
+.risk-safe { background: #f0fdf4; color: #16a34a; }
+.score-badge {
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.score-high { background: #fef2f2; color: #dc2626; }
+.score-low { background: #f0fdf4; color: #16a34a; }
+.threat-badge {
+  background: #dc2626;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Result Sections */
+.result-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+.result-section h4 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.detail-item {
+  background: #f9f9f9;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.detail-label {
+  display: block;
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+}
+.detail-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+}
+.text-red { color: #dc2626; }
+.text-green { color: #16a34a; }
+
+/* Sources List */
+.sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+}
+.source-hit { background: #fef2f2; }
+.source-clean { background: #f0fdf4; }
+.source-name { flex: 1; font-weight: 600; }
+.source-status {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+.status-hit { background: #dc2626; color: #fff; }
+.status-clean { background: #16a34a; color: #fff; }
+.source-score { color: #888; font-size: 0.75rem; }
+
+/* Signals */
+.signals-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.82rem;
+  color: #555;
+}
+.signals-list li { margin-bottom: 4px; }
+
+/* ScamBuster Section */
+.sb-section {
+  background: #1a1500;
+  border: 1px solid #a16207;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+.sb-section h4 { color: #f5b342; }
+.sb-section p { margin: 4px 0; font-size: 0.82rem; color: #ddd; }
+.sb-section strong { color: #f5b342; }
+
+.result-clean {
+  text-align: center;
+  padding: 16px 0;
+  color: #16a34a;
+  font-weight: 600;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .Container {

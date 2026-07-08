@@ -1,21 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "PhishNet Exchange - Link Guard",
-  "version": "1.0",
-  "description": "Scans and blocks suspicious links before you open them. Powered by PhishNet Exchange.",
-  "permissions": ["activeTab", "scripting", "storage", "webRequest", "webRequestBlocking", "tabs"],
+  "name": "PhishNet Exchange",
+  "version": "1.0.0",
+  "description": "Real-time phishing and malware URL protection powered by PhishNet Exchange.",
+  "permissions": ["webNavigation", "tabs", "storage"],
   "host_permissions": ["<all_urls>"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background/index.js"
   },
-  "content_scripts": [
+  "web_accessible_resources": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "resources": ["src/warning/index.html"],
+      "matches": ["<all_urls>"]
     }
   ],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "src/popup/index.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

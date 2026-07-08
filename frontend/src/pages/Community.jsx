@@ -7,6 +7,7 @@ import {
 import "../Components/styles/Community.css";
 import { Link } from "react-router-dom";
 import { FaSignsPost } from "react-icons/fa6";
+import ScamBusterWidget from "../Components/ScamBusterWidget";
 
 const CommunityPage = () => {
   const [search, setSearch] = useState("");
@@ -71,59 +72,8 @@ const CommunityPage = () => {
         ></div>
       )}
 
-      <div className="community-main">
-        <div className="top">
-          <input
-            className="search-bar"
-            placeholder="Search by user, tags, company..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Link to="/submit-threat" className="post-button">
-            Post Threat <FaSignsPost/>
-          </Link>
-        </div>
-        {filteredPosts.map((post) => (
-          <div key={post.id} className="post-card">
-            <div className="post-header">
-              <img src={post.avatar} alt="avatar" className="avatar" />
-              <div className="user-info">
-                <strong>{post.username}</strong>
-                <span className="timestamp">
-                  {new Date(post.timestamp).toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            <p className="content">{post.content}</p>
-
-            {post.image && (
-              <img src={post.image} alt="post" className="post-image" />
-            )}
-            {post.file && (
-              <a href={post.file} download className="download-link">
-                📄 Download Attachment
-              </a>
-            )}
-
-            <div className="tags">
-              {post.tags.map((tag, index) => (
-                <span key={index} className="tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            <div className="interaction-bar">
-              <button>👍 {post.likes}</button>
-              <button>💬 {post.commentCount} Comments</button>
-              <button>🔁 Share</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className={`sidebar ${showSidebar ? "show" : ""}`}>
+      {/* Left Sidebar — original content, toggled on mobile */}
+      <div className={`sidebar-left ${showSidebar ? "show" : ""}`}>
         <button 
           className="close-sidebar"
           onClick={() => setShowSidebar(false)}
@@ -176,6 +126,66 @@ const CommunityPage = () => {
               <button className="suggest">Discussions</button>
             </Link>
           </div>
+        </div>
+      </div>
+
+      <div className="community-main">
+        <div className="top">
+          <input
+            className="search-bar"
+            placeholder="Search by user, tags, company..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Link to="/submit-threat" className="post-button">
+            Post Threat <FaSignsPost/>
+          </Link>
+        </div>
+        {filteredPosts.map((post) => (
+          <div key={post.id} className="post-card">
+            <div className="post-header">
+              <img src={post.avatar} alt="avatar" className="avatar" />
+              <div className="user-info">
+                <strong>{post.username}</strong>
+                <span className="timestamp">
+                  {new Date(post.timestamp).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <p className="content">{post.content}</p>
+
+            {post.image && (
+              <img src={post.image} alt="post" className="post-image" />
+            )}
+            {post.file && (
+              <a href={post.file} download className="download-link">
+                📄 Download Attachment
+              </a>
+            )}
+
+            <div className="tags">
+              {post.tags.map((tag, index) => (
+                <span key={index} className="tag">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div className="interaction-bar">
+              <button>👍 {post.likes}</button>
+              <button>💬 {post.commentCount} Comments</button>
+              <button>🔁 Share</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Right Sidebar — ScamBuster feed */}
+      <div className="sidebar-right">
+        <div className="sidebar-section">
+          <h3>🔍 ScamBuster Kenya Reports</h3>
+          <ScamBusterWidget limit={5} />
         </div>
       </div>
     </div>

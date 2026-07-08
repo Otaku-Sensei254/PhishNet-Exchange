@@ -402,6 +402,7 @@ const Dashboard = () => {
             </button>
           </div>
         )}
+
       </div>
 
       {/* ================= CENTER PANEL ================= */}

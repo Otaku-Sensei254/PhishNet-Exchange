@@ -2,13 +2,11 @@
   display: flex;
   padding: 20px;
   gap: 20px;
-  flex-wrap: wrap;
+  align-items: flex-start;
   position: relative;
 }
 
 .toggle-sidebar {
-  position: relative;
-  left: 19rem;
   display: none;
   background: #333;
   color: white;
@@ -131,10 +129,22 @@
   cursor: pointer;
 }
 
-/* Sidebar */
-.sidebar {
+/* Sidebars */
+.sidebar-left {
   flex: 1;
   min-width: 250px;
+  max-width: 320px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.sidebar-right {
+  flex: 1;
+  min-width: 250px;
+  max-width: 320px;
   background: #fff;
   padding: 15px;
   border-radius: 8px;
@@ -234,27 +244,25 @@
   .toggle-sidebar {
     width: fit-content;
     display: inline-block;
-    position: relative;
-    left: 0;
     margin-bottom: 15px;
   }
 
-  .sidebar {
+  .sidebar-left {
     display: none;
     position: fixed;
     top: 0;
-    right: 0;
+    left: 0;
     width: 85%;
     height: 100vh;
     z-index: 100;
     max-width: 350px;
     overflow-y: auto;
-    transform: translateX(100%);
+    transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
     border-radius: 0;
   }
 
-  .sidebar.show {
+  .sidebar-left.show {
     display: block;
     transform: translateX(0);
   }
@@ -267,29 +275,87 @@
     display: block;
   }
 
+  .sidebar-right {
+    max-width: none;
+    width: 100%;
+  }
+
   .community-main {
     width: 100%;
   }
 }
 
 @media (max-width: 320px) {
-  .toggle-sidebar {
-    left: 0;
-    position: relative;
-  }
-  
   .post-card {
-    position: relative;
-    right: 0;
     width: 100%;
   }
   
-  .sidebar {
+  .sidebar-left {
     width: 100%;
     max-width: none;
   }
   
+  .sidebar-right {
+    width: 100%;
+    max-width: none;
+  }
+
   .talks {
     flex-direction: column;
   }
+}
+
+/* === Shared ScamBuster Widget === */
+.sb-widget { width: 100%; }
+.sb-list { list-style: none; padding: 0; margin: 0; }
+.sb-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f2f5;
+}
+.sb-item:last-child { border-bottom: none; }
+.sb-name {
+  color: #d4a017;
+  font-weight: 600;
+  text-decoration: none;
+  display: block;
+  font-size: 0.88rem;
+  margin-bottom: 3px;
+}
+.sb-name:hover { text-decoration: underline; }
+.sb-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+.sb-type {
+  display: inline-block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.type-investment { background: #fef2f2; color: #991b1b; }
+.type-jobs { background: #eff6ff; color: #1e40af; }
+.type-online { background: #f0fdf4; color: #166534; }
+.type-other { background: #f5f5f4; color: #444; }
+.sb-amount { color: #dc2626; font-weight: 600; }
+.sb-date { color: #888; }
+.sb-link {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: #d4a017;
+  text-decoration: none;
+  font-weight: 600;
+}
+.sb-link:hover { text-decoration: underline; }
+.sb-loading, .sb-empty {
+  color: #888;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 16px 0;
 }

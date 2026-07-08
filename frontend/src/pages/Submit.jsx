@@ -93,16 +93,10 @@ function SubmitPage({ onNewThreat }) {
     }
   };
 
-  const renderRiskReasons = (reasons) =>
-    !reasons || reasons.length === 0 ? (
-      <p>No suspicious indicators detected.</p>
-    ) : (
-      <ul>
-        {reasons.map((reason, i) => (
-          <li key={i}>{reason}</li>
-        ))}
-      </ul>
-    );
+  const hd = validationResult?.heuristicDetails || {};
+  const sources = validationResult?.sources || [];
+  const signals = validationResult?.signals || [];
+  const sbData = validationResult?.scamBuster || null;
 
   return (
     <div className="Container">
@@ -125,48 +119,84 @@ function SubmitPage({ onNewThreat }) {
           {error && <p style={{ color: "red" }}>{error}</p>}
           {validationResult && (
             <div className="validator-result">
-              <p>
-                <strong>Domain:</strong> {validationResult.domain || "N/A"}
-              </p>
-              <p>
-                <strong>Risk Level:</strong>{" "}
-                <span
-                  style={{
-                    color:
-                      validationResult.riskLevel === "high"
-                        ? "red"
-                        : validationResult.riskLevel === "medium"
-                        ? "orange"
-                        : "green",
-                  }}
-                >
-                  {validationResult.riskLevel?.toUpperCase() || "UNKNOWN"}
+              <div className="result-header">
+                <span className="result-domain">{validationResult.domain}</span>
+                <span className={`risk-badge risk-${validationResult.riskLevel}`}>
+                  {validationResult.riskLevel?.toUpperCase()}
                 </span>
-              </p>
-              <p>
-                <strong>SSL Valid:</strong>{" "}
-                {validationResult.sslValid ? "✅ Yes" : "❌ No"}
-              </p>
-              <p>
-                <strong>Domain Age:</strong>{" "}
-                {validationResult.domainAgeDays ?? "N/A"}
-              </p>
-              <p>
-                <strong>Similarity:</strong>{" "}
-                {validationResult.similarity
-                  ? `${validationResult.similarity.site} (${(
-                      validationResult.similarity.similarity * 100
-                    ).toFixed(1)}%)`
-                  : "N/A"}
-              </p>
-              <p>
-                <strong>IPQS Risk Score:</strong>{" "}
-                {validationResult.ipqs?.riskScore ?? "N/A"}
-              </p>
-              <p>
-                <strong>Reasons:</strong>
-                {renderRiskReasons(validationResult.riskReasons)}
-              </p>
+                <span className={`score-badge ${validationResult.riskScore >= 50 ? "score-high" : "score-low"}`}>
+                  Score: {validationResult.riskScore}/100
+                </span>
+                {validationResult.isThreat && (
+                  <span className="threat-badge">&#9888; THREAT</span>
+                )}
+              </div>
+
+              {/* Heuristic Details */}
+              <div className="result-section">
+                <h4>Heuristic Analysis</h4>
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <span className="detail-label">Brand Match</span>
+                    <span className="detail-value">{hd.brand || "None"}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">SSL Valid</span>
+                    <span className={`detail-value ${hd.sslValid === false ? "text-red" : "text-green"}`}>
+                      {hd.sslValid === undefined ? "Unchecked" : hd.sslValid ? "Yes" : "No"}
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Domain Age</span>
+                    <span className="detail-value">{hd.ageDays != null ? `${hd.ageDays} days` : "Unknown"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Threat Sources */}
+              {sources.length > 0 && (
+                <div className="result-section">
+                  <h4>Threat Intelligence Sources</h4>
+                  <div className="sources-list">
+                    {sources.map((s, i) => (
+                      <div key={i} className={`source-item ${s.isThreat ? "source-hit" : "source-clean"}`}>
+                        <span className="source-name">{s.name}</span>
+                        <span className={`source-status ${s.isThreat ? "status-hit" : "status-clean"}`}>
+                          {s.isThreat ? "THREAT" : "Clean"}
+                        </span>
+                        {s.isThreat && s.score !== undefined && <span className="source-score">+{s.score}pts</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Signals */}
+              {signals.length > 0 && (
+                <div className="result-section">
+                  <h4>Signals Detected</h4>
+                  <ul className="signals-list">
+                    {signals.map((sig, i) => (
+                      <li key={i}>{sig}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* ScamBuster */}
+              {sbData && (
+                <div className="result-section sb-section">
+                  <h4>Also Reported on ScamBuster.co.ke</h4>
+                  <p><strong>Entity:</strong> {sbData.matched}</p>
+                  <p><strong>Type:</strong> {sbData.type}</p>
+                  {sbData.amountLost > 0 && <p><strong>Amount Lost:</strong> KSh {Number(sbData.amountLost).toLocaleString()}</p>}
+                  <p><strong>Reported:</strong> {new Date(sbData.date).toLocaleDateString()}</p>
+                </div>
+              )}
+
+              {!validationResult.isThreat && signals.length === 0 && !sbData && (
+                <p className="result-clean">No threats detected.</p>
+              )}
             </div>
           )}
         </div>

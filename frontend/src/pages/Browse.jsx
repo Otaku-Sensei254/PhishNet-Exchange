@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../Components/styles/Browse.css";
 import countries from "../Components/utils/countries";
 import { Link } from "react-router-dom";
+import ScamBusterWidget from "../Components/ScamBusterWidget";
 
 function BrowseIOCs() {
   const [iocs, setIocs] = useState([]);
@@ -207,6 +208,11 @@ function BrowseIOCs() {
           </table>
         </div>
       )}
+
+      <div className="browse-scambuster">
+        <h3>🔍 ScamBuster Kenya Reports</h3>
+        <ScamBusterWidget limit={5} />
+      </div>
     </div>
   );
 }
