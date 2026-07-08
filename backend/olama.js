@@ -1,7 +1,20 @@
 import express from "express"
 import axios from "axios";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors({
+  origin: [
+    'https://phish-net-exchange-mk2.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 app.use(express.json());
 
 // memory for conversation
