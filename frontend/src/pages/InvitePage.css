@@ -1,0 +1,99 @@
+.invite-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  padding: 24px;
+}
+
+.invite-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 40px 32px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+}
+
+.invite-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+.invite-card h1 {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--foreground);
+  margin: 0 0 8px 0;
+}
+
+.invite-team-name {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--primary);
+  margin: 0 0 8px 0;
+}
+
+.invite-desc {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+.invite-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.invite-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 10px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+  text-decoration: none;
+  border: 1px solid var(--border);
+}
+
+.invite-btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.invite-btn-primary:hover {
+  background: #dc2626;
+}
+
+.invite-btn-secondary {
+  background: transparent;
+  color: var(--foreground);
+}
+
+.invite-btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: invite-spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes invite-spin {
+  to { transform: rotate(360deg); }
+}

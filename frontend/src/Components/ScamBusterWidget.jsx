@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./styles/ScamBusterWidget.css";
 
 function relativeDate(iso) {
   if (!iso) return "";

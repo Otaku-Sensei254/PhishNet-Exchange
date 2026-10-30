@@ -6,7 +6,8 @@ import { UserContext } from "../context/userContext";
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const { setUser } = useContext(UserContext); // ✅ Pull context
+  const [showPw, setShowPw] = useState(false);
+  const { setUser } = useContext(UserContext);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -29,17 +30,15 @@ const Login = () => {
 
         localStorage.setItem("token", result.token);
 
-        // Decode the token to get user ID
         const decoded = JSON.parse(atob(result.token.split(".")[1]));
 
-        // Fetch user details
         const userRes = await fetch(
           `${process.env.REACT_APP_API_URL}/api/auth/user/${decoded.id}`
         );
         const userData = await userRes.json();
 
         if (userData.user) {
-          setUser(userData.user); // ✅ update context
+          setUser(userData.user);
           navigate("/dashboard");
         } else {
           alert("Failed to fetch user data");
@@ -59,25 +58,40 @@ const Login = () => {
         <form className="login-form" onSubmit={handleSubmit}>
           <h2>Login</h2>
           <div className="inputs">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <div className="input-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-            <label htmlFor="password">Password:</label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="input-group">
+              <label htmlFor="password">Password</label>
+              <div className="password-wrap">
+                <input
+                  type={showPw ? "text" : "password"}
+                  id="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  className="toggle-pw"
+                  onClick={() => setShowPw(!showPw)}
+                  tabIndex={-1}
+                  aria-label={showPw ? "Hide password" : "Show password"}
+                >
+                  {showPw ? "🙈" : "👁"}
+                </button>
+              </div>
+            </div>
 
             <div className="CTAs">
               <p>Don't have an account?</p>

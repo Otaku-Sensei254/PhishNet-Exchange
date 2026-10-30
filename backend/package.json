@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "postinstall": "npx prisma generate --schema=./prisma/schema.prisma"
+    "postinstall": "npx prisma generate --schema=./prisma/schema.prisma",
+    "seed:leaks": "node scripts/seedLeaks.js"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "crypto-js": "^4.2.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.7.2",
     "express-session": "^1.18.1",
     "fuzzball": "^2.2.2",
     "jsonwebtoken": "^9.0.2",

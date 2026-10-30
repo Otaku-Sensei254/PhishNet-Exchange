@@ -5,7 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const submitThreat = async (req, res) => {
   try {
     const userId = req.user?.id; // Postgres user ID from JWT
-    const { indicator, type, hashtags, country } = req.body;
+    const { indicator, type, hashtags, country, techniqueId, tactic, techniqueName } = req.body;
 
     if (!indicator || !type || !country) {
       return res.status(400).json({
@@ -29,6 +29,9 @@ export const submitThreat = async (req, res) => {
       hashtags: hashtags || [],
       country: JSON.parse(country),
       screenshotUrl,
+      techniqueId: techniqueId || undefined,
+      tactic: tactic || undefined,
+      techniqueName: techniqueName || undefined,
       submittedBy: userId,
     });
 

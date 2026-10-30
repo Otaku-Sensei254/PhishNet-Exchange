@@ -5,6 +5,7 @@ import sslChecker from "ssl-checker";
 import { extractDomain } from "../utils/extractDomain.js";
 import * as cache from "./cache.js";
 import * as scamBuster from "./scamBuster.js";
+import { mapSignalsToMitre } from "./mitreMapper.js";
 
 const brands = [];
 const whitelist = new Set();
@@ -30,7 +31,7 @@ const HEURISTIC_WEIGHTS = {
   domainEntropy: 15,
   tldReputation: 10,
   urlStructure: 10,
-  sslValidity: 10,
+  sslValidity: 20,
   total: 100,
 };
 
@@ -296,8 +297,8 @@ async function heuristicScore(url) {
     results.sslValid = sslData.valid;
   } catch {}
   if (!results.sslValid) {
-    total += 20;
-    signals.push("Invalid/missing SSL (20pts)");
+    total += 30;
+    signals.push("Invalid/missing SSL (30pts)");
   }
 
   // Brand-in-subdomain detection: brand name appears in hostname but not in root domain
@@ -524,6 +525,8 @@ export async function analyzeURL(url) {
   else if (verdict.riskScore >= 50) { verdict.riskLevel = "medium"; verdict.isThreat = true; }
   else if (verdict.riskScore >= 30) verdict.riskLevel = "low";
   else verdict.riskLevel = "safe";
+
+  verdict.mitre = mapSignalsToMitre(verdict.signals, verdict.sources, verdict.riskScore);
 
   if (verdict.isThreat || verdict.riskScore >= 50) {
     blocklist.add(domain);

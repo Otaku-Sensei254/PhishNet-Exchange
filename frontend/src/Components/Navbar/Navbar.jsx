@@ -54,10 +54,9 @@ const Navbar = () => {
         {/* Navigation Links */}
         <div className={`nav-links ${menuOpen ? "open" : ""}`}>
           <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link to="/browse-iocs" onClick={() => setMenuOpen(false)}>IOCs</Link>
           <Link to="/submit-threat" onClick={() => setMenuOpen(false)}>Submit Threat</Link>
-          <Link to="/community" onClick={() => setMenuOpen(false)}>Community</Link>
-          <Link to="/pricing" onClick={() => setMenuOpen(false)}>Packages</Link>
+          <Link to="/browse-iocs" onClick={() => setMenuOpen(false)}>Browse IOCs</Link>
+          <a href="http://localhost:3001" className="securefix-link" target="_blank" rel="noopener noreferrer">SecureFix.KE</a>
 
           {/* Show Get Started button only when not logged in */}
           {!user && (

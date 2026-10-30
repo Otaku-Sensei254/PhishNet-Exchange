@@ -1,8 +1,7 @@
 .leak-widget {
-  background: #f8f8f8;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 16px;
   max-width: 400px;
   margin: auto;
 }
@@ -10,26 +9,45 @@
 .leak-widget input {
   display: block;
   width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.leak-widget input:focus {
+  outline: none;
+  border-color: var(--primary);
 }
 
 .leak-widget button {
   width: 100%;
-  padding: 10px;
-  background: #0077ff;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  padding: 8px;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.leak-widget button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .leak-widget button:disabled {
-  background: #999;
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
-.results {
-  margin-top: 15px;
+.leak-widget .results {
+  margin-top: 12px;
 }

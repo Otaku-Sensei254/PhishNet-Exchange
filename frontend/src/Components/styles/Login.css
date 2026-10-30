@@ -1,39 +1,32 @@
-/* Base Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Container Styling */
 .Container {
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #e6f0ff, #ffffff);
-  padding: 20px;
+  background: var(--background);
+  padding: 24px;
 }
 
-/* Login Box */
-.login-container {
-  background-color: white;
-  padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+.login-container,
+.signup-container {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 36px 32px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
 }
 
-/* Form Styling */
-.login-form h2 {
-  margin-bottom: 24px;
-  color: #1a73e8;
+.login-form h2,
+.signup-form h2 {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--foreground);
   text-align: center;
-  font-size: 28px;
+  margin-bottom: 28px;
 }
 
-/* Input Section */
 .inputs {
   display: flex;
   flex-direction: column;
@@ -41,59 +34,221 @@
 }
 
 .inputs label {
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+  margin-bottom: -4px;
 }
 
-.inputs input {
-  padding: 12px 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: border 0.2s;
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.inputs input:focus {
-  outline: none;
-  border-color: #1a73e8;
+.password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-/* Login Button */
-.login-button {
-  background-color: #1a73e8;
-  color: white;
-  padding: 12px;
+.password-wrap input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 10px;
+  background: none;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
+  color: var(--muted-foreground);
   cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.3s;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+  font-size: 1rem;
+  line-height: 1;
 }
+
+.toggle-pw:hover {
+  color: var(--foreground);
+}
+
+.inputs input[type="text"],
+.inputs input[type="email"],
+.inputs input[type="password"],
+.inputs select {
+  padding: 11px 14px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputs input:focus,
+.inputs select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary), 0 0 12px var(--glow);
+}
+
+.inputs select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239ca3af' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.inputs select option {
+  background: var(--panel);
+  color: var(--foreground);
+}
+
+.file-upload {
+  position: relative;
+  border: 1px dashed var(--border);
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.file-upload:hover {
+  border-color: var(--primary);
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-upload-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.file-upload-label .upload-icon {
+  font-size: 1.4rem;
+}
+
+.file-upload.has-file {
+  border-color: var(--primary);
+  border-style: solid;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.file-upload.has-file .file-upload-label {
+  color: var(--foreground);
+}
+
+.inputs input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.login-button,
+.signup-button {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 12px 24px;
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.login-button:hover,
+.signup-button:hover {
+  background: #dc2626;
+  box-shadow: 0 0 16px var(--glow);
+}
+
+.login-button:active,
+.signup-button:active {
+  transform: scale(0.98);
+}
+
+.CTAs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.CTAs p {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
 .goTo {
-  color: #1a73e8;
-}
-.login-button:hover {
-  background-color: #155ab6;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--info);
+  transition: color 0.15s;
+  text-decoration: none;
 }
 
-/* Responsive */
+.goTo:hover {
+  color: var(--foreground);
+  text-decoration: underline;
+}
+
+.terms-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.terms-container p {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  line-height: 1.4;
+}
+
+.terms-link,
+.privacy-link {
+  color: var(--info);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+
+.input-hint {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--muted-foreground);
+  margin-top: -10px;
+  font-style: italic;
+}
+
 @media (max-width: 480px) {
-  .login-container {
-    padding: 30px 20px;
-  }
-
-  .login-form h2 {
-    font-size: 24px;
-  }
-
-  .inputs input {
-    font-size: 14px;
-  }
-
-  .login-button {
-    font-size: 15px;
+  .login-container,
+  .signup-container {
+    padding: 24px 16px;
   }
 }

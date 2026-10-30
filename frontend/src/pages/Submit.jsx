@@ -101,9 +101,8 @@ function SubmitPage({ onNewThreat }) {
   return (
     <div className="Container">
       <div className="threatBox">
-        {/* Validator */}
         <div className="validator-box">
-          <h2>🔍 Validate a Suspected Link</h2>
+          <h2>Validate a Suspected Link</h2>
           <div className="validator-inputs">
             <input
               type="text"
@@ -111,12 +110,12 @@ function SubmitPage({ onNewThreat }) {
               value={validationInput}
               onChange={(e) => setValidationInput(e.target.value)}
             />
-            <button onClick={() => validateIndicator(validationInput)}>
-              Validate
+            <button onClick={() => validateIndicator(validationInput)} disabled={loading}>
+              {loading ? "Checking..." : "Validate"}
             </button>
           </div>
-          {loading && <p>Checking link...</p>}
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          {loading && <p className="result-clean" style={{ marginTop: 8, color: "var(--muted-foreground)" }}>Checking link...</p>}
+          {error && <p className="result-clean" style={{ marginTop: 8, color: "var(--danger)" }}>{error}</p>}
           {validationResult && (
             <div className="validator-result">
               <div className="result-header">
@@ -128,11 +127,10 @@ function SubmitPage({ onNewThreat }) {
                   Score: {validationResult.riskScore}/100
                 </span>
                 {validationResult.isThreat && (
-                  <span className="threat-badge">&#9888; THREAT</span>
+                  <span className="threat-badge">THREAT</span>
                 )}
               </div>
 
-              {/* Heuristic Details */}
               <div className="result-section">
                 <h4>Heuristic Analysis</h4>
                 <div className="detail-grid">
@@ -143,7 +141,7 @@ function SubmitPage({ onNewThreat }) {
                   <div className="detail-item">
                     <span className="detail-label">SSL Valid</span>
                     <span className={`detail-value ${hd.sslValid === false ? "text-red" : "text-green"}`}>
-                      {hd.sslValid === undefined ? "Unchecked" : hd.sslValid ? "Yes" : "No"}
+                      {hd.sslValid === undefined ? "Unchecked" : hd.sslValid ? "Yes (Safe)" : "No (Unsafe)"}
                     </span>
                   </div>
                   <div className="detail-item">
@@ -153,7 +151,6 @@ function SubmitPage({ onNewThreat }) {
                 </div>
               </div>
 
-              {/* Threat Sources */}
               {sources.length > 0 && (
                 <div className="result-section">
                   <h4>Threat Intelligence Sources</h4>
@@ -171,7 +168,6 @@ function SubmitPage({ onNewThreat }) {
                 </div>
               )}
 
-              {/* Signals */}
               {signals.length > 0 && (
                 <div className="result-section">
                   <h4>Signals Detected</h4>
@@ -183,7 +179,6 @@ function SubmitPage({ onNewThreat }) {
                 </div>
               )}
 
-              {/* ScamBuster */}
               {sbData && (
                 <div className="result-section sb-section">
                   <h4>Also Reported on ScamBuster.co.ke</h4>
@@ -201,20 +196,20 @@ function SubmitPage({ onNewThreat }) {
           )}
         </div>
 
-        {/* Submission Form */}
         <div className="submit-container">
           <form onSubmit={handleSubmit} className="submit-form">
-            <h2>📤 Submit Threat Indicator</h2>
+            <h2>Submit Threat Indicator</h2>
 
-            <label>URL, IP, or Email:</label>
+            <label htmlFor="indicator">URL, IP, or Email:</label>
             <input
+              id="indicator"
               type="text"
               value={indicator}
               onChange={(e) => setIndicator(e.target.value)}
               placeholder="http://malicious.com"
             />
 
-            <label>Type:</label>
+            <label htmlFor="type">Type:</label>
             <select id="type">
               <option value="">-- Select Type --</option>
               <option value="PHISHING_URL">Phishing URL</option>
@@ -223,16 +218,18 @@ function SubmitPage({ onNewThreat }) {
               <option value="FAKE_WEBSITE">Fake Website</option>
             </select>
 
-            <label>Hashtags:</label>
+            <label htmlFor="hashtags">Hashtags:</label>
             <input
+              id="hashtags"
               type="text"
               value={hashtags}
               onChange={(e) => setHashtags(e.target.value)}
               placeholder="#banking #fraud"
             />
 
-            <label>Country:</label>
+            <label htmlFor="country">Country:</label>
             <select
+              id="country"
               value={selectedCountry?.name || ""}
               onChange={(e) =>
                 setSelectedCountry(
@@ -248,10 +245,12 @@ function SubmitPage({ onNewThreat }) {
               ))}
             </select>
 
+            <label htmlFor="image">Attachment (optional):</label>
             <input type="file" id="image" />
+
             <button type="submit">Submit</button>
             {submitted && (
-              <p style={{ color: "green", marginTop: "1em" }}>
+              <p className="result-clean" style={{ marginTop: 12, color: "var(--safe)" }}>
                 Threat submitted successfully!
               </p>
             )}

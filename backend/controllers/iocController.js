@@ -4,7 +4,7 @@ import IOC from "../models/IOCs.js";
 export const submitIOC = async (req, res) => {
   try {
     const userId = req.user?.id; // Postgres user ID from JWT
-    const { indicatorType, ioc, sourceCountry, tags } = req.body;
+    const { indicatorType, ioc, sourceCountry, tags, techniqueId, tactic, techniqueName } = req.body;
 
     if (!indicatorType || !ioc || !sourceCountry) {
       return res
@@ -24,6 +24,9 @@ export const submitIOC = async (req, res) => {
           ? JSON.parse(sourceCountry)
           : sourceCountry,
       tags: parsedTags,
+      techniqueId: techniqueId || undefined,
+      tactic: tactic || undefined,
+      techniqueName: techniqueName || undefined,
       submittedBy: userId,
     });
 

@@ -3,104 +3,122 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #011d39;
-  padding: 1rem;
+  background: var(--background);
+  padding: 24px;
 }
 
 .payment-status-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 2rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 40px 32px;
   max-width: 480px;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
 }
 
 .status-logo {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
 }
 
 .payment-status-card.success .status-logo {
-  border: 3px solid #22c55e;
+  border: 2px solid var(--safe);
+  color: var(--safe);
 }
 
 .payment-status-card.failed .status-logo {
-  border: 3px solid #ef4444;
-  filter: grayscale(0.3);
+  border: 2px solid var(--danger);
+  color: var(--danger);
 }
 
-h1 {
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
+.payment-status-card h1 {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--foreground);
+  margin-bottom: 8px;
 }
 
 .thank-you-text {
-  color: #4b5563;
-  margin-bottom: 1rem;
-  font-size: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin-bottom: 16px;
   line-height: 1.5;
 }
 
 .transaction-ref {
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: 0.75rem;
-  font-size: 0.9rem;
-  color: #1e293b;
-  margin-bottom: 1.5rem;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--foreground);
+  margin-bottom: 20px;
+  word-break: break-all;
 }
 
 .status-actions {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .status-btn {
-  background-color: #2563eb;
-  color: white;
-  padding: 0.8rem 1.4rem;
-  border: none;
-  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 20px;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
   cursor: pointer;
+  font-weight: 600;
   text-decoration: none;
-  font-weight: 500;
-  transition: background 0.3s ease;
+  transition: all 0.15s;
 }
 
 .status-btn:hover {
-  background-color: #1e40af;
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
-.try-again {
-  background-color: #f87171;
+.status-btn.primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
 }
 
-.try-again:hover {
-  background-color: #dc2626;
+.status-btn.primary:hover {
+  background: #dc2626;
 }
 
-.contact-support {
-  background-color: #64748b;
+.status-btn.danger {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
-.contact-support:hover {
-  background-color: #475569;
+.status-btn.danger:hover {
+  background: var(--danger);
+  color: #fff;
 }
 
 .status-footer {
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-  color: #6b7280;
+  margin-top: 20px;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
 }
 
 .support-link {
-  color: #2563eb;
+  color: var(--primary);
   text-decoration: none;
 }
 

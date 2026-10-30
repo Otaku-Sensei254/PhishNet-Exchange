@@ -1,7 +1,5 @@
-// Components/DashboardWithTeamCheck.jsx
 import React, { useEffect, useState, useContext } from "react";
 import Dashboard from "./Dashboard";
-import TeamDashboard from "./TeamDashboard";
 import TeamInvitationModal from "../TeamInvitationModal";
 import useTeamInvitations from "../../hooks/useTeamInvitations";
 import { UserContext } from "../../context/userContext";
@@ -9,26 +7,23 @@ import { UserContext } from "../../context/userContext";
 const DashboardWithTeamCheck = () => {
   const { user } = useContext(UserContext);
   const [userTeam, setUserTeam] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [userRole, setUserRole] = useState("member");
   const [loading, setLoading] = useState(true);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
   const [currentInvitation, setCurrentInvitation] = useState(null);
 
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
   const { invitations, acceptInvitation, rejectInvitation } = useTeamInvitations(user?.id);
 
-  // Check if user belongs to a team
   useEffect(() => {
     const checkUserTeam = async () => {
       if (!user?.id) return;
-
       try {
-        const response = await fetch(`${API_URL}/teams/user/${user.id}`);
+        const response = await fetch(`${API_URL}/api/teams/user/${user.id}`);
         const data = await response.json();
-
         if (data.userInTeam) {
           setUserTeam(data.team);
-          setIsAdmin(data.team.adminId === user.id);
+          setUserRole(data.role || "member");
         }
       } catch (error) {
         console.error("Error checking user team:", error);
@@ -36,18 +31,16 @@ const DashboardWithTeamCheck = () => {
         setLoading(false);
       }
     };
-
     checkUserTeam();
   }, [user?.id, API_URL]);
 
-  // Show invitation modal when new invitation arrives
   useEffect(() => {
     if (invitations.length > 0 && !showInvitationModal) {
       const firstInvitation = invitations[0];
       setCurrentInvitation({
         teamName: firstInvitation.teamName,
-        adminEmail: firstInvitation.adminId?.email || "Admin",
-        teamId: firstInvitation.id,
+        adminEmail: firstInvitation.adminEmail || "Admin",
+        teamId: firstInvitation.id || firstInvitation.teamId,
         invitedAt: firstInvitation.createdAt,
       });
       setShowInvitationModal(true);
@@ -60,11 +53,11 @@ const DashboardWithTeamCheck = () => {
       if (success) {
         setShowInvitationModal(false);
         setCurrentInvitation(null);
-        // Refresh team data
-        const response = await fetch(`${API_URL}/teams/user/${user.id}`);
+        const response = await fetch(`${API_URL}/api/teams/user/${user.id}`);
         const data = await response.json();
         if (data.userInTeam) {
           setUserTeam(data.team);
+          setUserRole(data.role || "member");
         }
       }
     }
@@ -82,26 +75,9 @@ const DashboardWithTeamCheck = () => {
     return <div className="loading">Loading dashboard...</div>;
   }
 
-  // If user is in a team and is admin, show Team Dashboard
-  if (userTeam && isAdmin) {
-    return (
-      <>
-        <TeamDashboard user={user} isAdmin={true} teamData={userTeam} />
-        <TeamInvitationModal
-          invitation={currentInvitation}
-          onAccept={handleAcceptInvitation}
-          onReject={handleRejectInvitation}
-          isOpen={showInvitationModal}
-        />
-      </>
-    );
-  }
-
-  // If user is in a team but not admin, still show regular dashboard with team info
-  // They can view their team from a button in the dashboard
   return (
     <>
-      <Dashboard user={user} userTeam={userTeam} isTeamMember={!!userTeam} />
+      <Dashboard user={user} userTeam={userTeam} userRole={userRole} />
       <TeamInvitationModal
         invitation={currentInvitation}
         onAccept={handleAcceptInvitation}

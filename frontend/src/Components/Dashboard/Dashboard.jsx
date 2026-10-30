@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import LeakCheckForm from "../LeakCheckFrm/Leakcheck";
 import "./Dashboard.css";
 import { UserContext } from "../../context/userContext";
 
-const Dashboard = () => {
+const Dashboard = ({ userTeam = null, userRole = "member" }) => {
   const { user, setUser, fetchUser } = useContext(UserContext);
   const [history, setHistory] = useState([]);
   const [autoScanEnabled, setAutoScanEnabled] = useState(false);
@@ -55,24 +55,16 @@ const Dashboard = () => {
 
   /** ✅ Fetch team members if user is on Team plan */
   useEffect(() => {
-    const fetchTeamMembers = async () => {
-      if (isTeam()) {
-        const token = localStorage.getItem("token");
-        try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/team/members`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await response.json();
-          if (data.success) setTeamMembers(data.members);
-        } catch (err) {
-          console.error("Error fetching team members:", err);
-        }
-      }
-    };
-
-    fetchTeamMembers();
+    if (isTeam()) {
+      fetch(`${process.env.REACT_APP_API_URL}/api/teams/user/${user.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.team?.members) setTeamMembers(data.team.members);
+        })
+        .catch((err) => console.error("Error fetching team members:", err));
+    }
   }, [user, isTeam]);
-  
+
   /** ✅ Set default upgrade plan based on user's current plan */
   useEffect(() => {
     if (isPro()) {
@@ -92,7 +84,7 @@ const Dashboard = () => {
     }
     const newState = !autoScanEnabled;
     setAutoScanEnabled(newState);
-    
+
     const token = localStorage.getItem("token");
     fetch(`${process.env.REACT_APP_API_URL}/api/auto-scan/toggle`, {
       method: "POST",
@@ -121,7 +113,7 @@ const Dashboard = () => {
       return;
     }
     setScanFrequency(e.target.value);
-    
+
     if (autoScanEnabled) {
       const token = localStorage.getItem("token");
       fetch(`${process.env.REACT_APP_API_URL}/api/auto-scan/update-frequency`, {
@@ -198,7 +190,7 @@ const Dashboard = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/team/add-member`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/teams/add-member`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -255,9 +247,9 @@ const Dashboard = () => {
       toast.error("Please log in first.");
       return;
     }
-    
+
     // Use the state variable 'upgradePlan'
-    const plan = upgradePlan; 
+    const plan = upgradePlan;
     const amount = plan === "pro" ? 499 : 3000;
 
     try {
@@ -296,24 +288,49 @@ const Dashboard = () => {
         </h2>
 
         {user ? (
-          <ul>
-            <li>
-              <strong>Username:</strong> {user.username}
-            </li>
-            <li>
-              <strong>Email:</strong> {user.email}
-            </li>
-            <li>
-              <strong>plan:</strong>{" "}
-              <span
-                className={`sub-tier ${String(user.plan || "free").toLowerCase()}`}
-              >
-                {user.plan || "Free"}
-              </span>
-            </li>
-          </ul>
+          <>
+            <ul>
+              <li>
+                <strong>Username:</strong> {user.username}
+              </li>
+              <li>
+                <strong>Email:</strong> {user.email}
+              </li>
+              <li>
+                <strong>plan:</strong>{" "}
+                <span
+                  className={`sub-tier ${String(user.plan || "free").toLowerCase()}`}
+                >
+                  {user.plan || "Free"}
+                </span>
+              </li>
+            </ul>
+            {user.plan === "team" ? (
+              <div className="team-members-section styled-box">
+                <Link to="/team">
+                  <button className="to-team-dash">
+                    Team Dashboard
+                  </button>
+                </Link>
+                <span className="team-name">Team Name</span>
+              </div>
+            ) : null}
+          </>
         ) : (
           <p>Loading user info...</p>
+        )}
+
+        {userTeam && (
+          <div className="team-link-card">
+            <div className="team-link-header">
+              <span className="team-link-icon">⚔️</span>
+              <div>
+                <span className="team-link-name">{userTeam.teamName}</span>
+                <span className="team-link-role">{userRole}</span>
+              </div>
+            </div>
+            <Link to="/team" className="team-link-btn">→ Team Dashboard</Link>
+          </div>
         )}
 
         {/* === Monitored Accounts === */}
@@ -347,36 +364,6 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* === Team Management (Only for Team users) === */}
-        {isTeam() && (
-          <div className="team-management-section styled-box">
-            <h4>👥 Team Management</h4>
-            <div className="team-members-list">
-              {teamMembers.map((member, i) => (
-                <div key={i} className="team-member">
-                  <span>{member.email}</span>
-                  <span className={`member-status ${member.status}`}>
-                    {member.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <form onSubmit={handleAddTeamMember} className="add-member-form">
-              <input
-                type="email"
-                placeholder="Add team member email"
-                value={newMemberEmail}
-                onChange={(e) => setNewMemberEmail(e.target.value)}
-                required
-              />
-              <button type="submit">Add Member</button>
-            </form>
-            <button onClick={handleDownloadPDF} className="download-pdf-btn">
-              📄 Download PDF Report
-            </button>
-          </div>
-        )}
-
         {/* === Upgrade Plan (Show for Free AND Pro users) === */}
         {(isFree() || isPro()) && (
           <div className="upgrade-plan-section styled-box">
@@ -408,7 +395,7 @@ const Dashboard = () => {
       {/* ================= CENTER PANEL ================= */}
       <div className="dashboard-center">
         <LeakCheckForm />
-        
+
         {/* Analytics Charts for Team Users */}
         {isTeam() && (
           <div className="analytics-section">

@@ -1,5 +1,108 @@
-.form-container{
-    display: flex;
-    align-items: center;
-    justify-self: center;
+.posts-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  min-height: calc(100vh - 64px);
+}
+
+.posts-container h1 {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--foreground);
+  margin-bottom: 24px;
+}
+
+.posts-container .post-item {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+
+.posts-container .post-item:hover {
+  border-color: var(--primary);
+}
+
+.posts-container .post-item h3 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+
+.posts-container .post-item p {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+
+.posts-container .post-item .meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--muted-foreground);
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+
+.posts-container form {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.posts-container form label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.posts-container form input,
+.posts-container form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  margin-bottom: 12px;
+}
+
+.posts-container form input:focus,
+.posts-container form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.posts-container form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.posts-container form button {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 20px;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.posts-container form button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }

@@ -1,81 +1,89 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { UserProvider } from "./context/userContext"; // ✅ Make sure path is correct
+import { UserProvider } from "./context/userContext";
 import "./index.css";
 
 import Home from "./pages/Home";
-//import Submit from "./pages/Submit";
-import Browse from "./pages/Browse";
-import Community from "./pages/Community";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Suggestions from "./pages/Suggestions";
-import Pricing from "./pages/Pricing";
+import SubmitPage from "./pages/Submit";
+import BrowseIOCs from "./pages/BrowseIOCs";
+import MagicLogin from "./pages/MagicLogin";
 
 import Navbar from "./Components/Navbar/Navbar";
 import Footer from "./Components/Footer/Footer";
+import PixelBlast from "./Components/PixelBlast";
 
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import Discussions from "./pages/Discussions";
-import IOC from "./pages/IOCs";
-import SubmitPage from "./pages/Submit";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
-import Post from "./pages/Post";
 import TeamDashboard from "./Components/Dashboard/TeamDashboard";
 import DashboardWithTeamCheck from "./Components/Dashboard/DashboardWithTeamCheck";
+import InvitePage from "./pages/InvitePage";
 
-// Layout component with Navbar and Footer
 const Layout = () => {
   return (
-    <div>
-      <Navbar />
-      <Outlet />
-      <Footer />
+    <div className="layout-root">
+      <div className="layout-bg">
+        <PixelBlast
+          variant="square"
+          pixelSize={6}
+          color="#ef4444"
+          patternScale={2}
+          patternDensity={0.8}
+          pixelSizeJitter={0.3}
+          enableRipples
+          rippleSpeed={0.3}
+          rippleThickness={0.08}
+          rippleIntensityScale={1.2}
+          liquid={false}
+          speed={0.4}
+          edgeFade={0.3}
+          transparent
+        />
+      </div>
+      <div className="layout-content">
+        <Navbar />
+        <Outlet />
+        <Footer />
+      </div>
     </div>
   );
 };
 
-// Define routes
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
       { path: "/", element: <Home /> },
-      { path: "/submit-ioc", element: <IOC/> },
-      { path: "/browse-iocs", element: <Browse /> },
-      { path: "/community", element: <Community /> },
       { path: "/submit-threat", element: <SubmitPage /> },
-      { path: "/discussions", element: <Discussions /> },
+      { path: "/browse-iocs", element: <BrowseIOCs /> },
+      { path: "/magic", element: <MagicLogin /> },
       { path: "/login", element: <Login /> },
       { path: "/signup", element: <Signup /> },
       { path: "/dashboard", element: <DashboardWithTeamCheck /> },
-      { path: "/suggest", element: <Suggestions /> },
-      { path: "/pricing", element: <Pricing /> },
-      { path: "/posts", element: <Post /> },
       { path: "/team", element: <TeamDashboard /> },
-
     ],
-    
   },
   {
-    path:"/payment-success",
-    element:<PaymentSuccess/>
+    path: "/payment-success",
+    element: <PaymentSuccess />,
   },
   {
-    path:"/payment-failed",
-    element:<PaymentFailed/>
-  }
+    path: "/payment-failed",
+    element: <PaymentFailed />,
+  },
+  {
+    path: "/invite",
+    element: <InvitePage />,
+  },
 ]);
 
-// Render the app
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <UserProvider>
-      {" "}
-      {/* ✅ Wrap the entire app here */}
       <RouterProvider router={router} />
     </UserProvider>
   </React.StrictMode>

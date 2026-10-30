@@ -13,6 +13,9 @@ const iocSchema = new mongoose.Schema(
       code: String,
       flag: String,
     },
+    techniqueId: { type: String },
+    tactic: { type: String },
+    techniqueName: { type: String },
     tags: [{ type: String }],
     votes: {
       up: { type: Number, default: 0 },

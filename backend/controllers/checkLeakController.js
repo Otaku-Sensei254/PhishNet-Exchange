@@ -1,5 +1,6 @@
-// backend/controllers/checkLeakController.js
 import pool from "../config/neon.js";
+
+const XON_API = "https://api.xposedornot.com/v1/check-email";
 
 export async function checkLocalLeaks(req, res) {
   const { email, username, password } = req.body;
@@ -35,74 +36,90 @@ export async function checkLocalLeaks(req, res) {
       LIMIT 200;
     `;
 
-    const { rows } = await pool.query(query, values);
+    let { rows } = await pool.query(query, values);
 
-    if (rows.length === 0) {
-      return res.json({ leaked: false, matches: [] });
+    // If local cache has results, return them immediately
+    if (rows.length > 0) {
+      return res.json({
+        leaked: true,
+        matches: groupMatches(rows),
+      });
     }
 
-    // Group results by field + value
-    const grouped = {};
+    // Cache miss — try XposedOrNot API (email only)
+    if (email) {
+      try {
+        const xonRes = await fetch(`${XON_API}/${encodeURIComponent(email)}`, {
+          signal: AbortSignal.timeout(5000),
+        });
+        const xonData = await xonRes.json();
 
-    rows.forEach((row) => {
-      if (row.email) {
-        const key = `email:${row.email}`;
-        if (!grouped[key]) {
-          grouped[key] = {
-            field: "email",
-            value: row.email,
-            sources: new Set(),
-          };
+        if (xonData.status === "success" && xonData.breaches?.length > 0) {
+          const breachNames = xonData.breaches.flat();
+          const sourceStr = breachNames.join(", ");
+
+          // Cache result in local DB
+          try {
+            await pool.query(
+              `INSERT INTO leaks (email, source) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+              [email, sourceStr]
+            );
+          } catch (cacheErr) {
+            console.warn("Failed to cache leak result:", cacheErr.message);
+          }
+
+          return res.json({
+            leaked: true,
+            matches: [{
+              field: "email",
+              value: email,
+              sources: breachNames,
+            }],
+          });
         }
-        grouped[key].sources.add(row.source || pickRandomSource());
+      } catch (xonErr) {
+        console.warn("XposedOrNot API error:", xonErr.message);
       }
+    }
 
-      if (row.username) {
-        const key = `username:${row.username}`;
-        if (!grouped[key]) {
-          grouped[key] = {
-            field: "username",
-            value: row.username,
-            sources: new Set(),
-          };
-        }
-        grouped[key].sources.add(row.source || pickRandomSource());
-      }
-
-      if (row.password) {
-        const key = `password:${row.password}`;
-        if (!grouped[key]) {
-          grouped[key] = {
-            field: "password",
-            value: row.password,
-            sources: new Set(),
-          };
-        }
-        grouped[key].sources.add(row.source || pickRandomSource());
-      }
-    });
-
-    // Convert sources Set → array
-    const matches = Object.values(grouped).map((item) => ({
-      ...item,
-      sources: [...item.sources],
-    }));
-
-    res.json({ leaked: true, matches });
+    return res.json({ leaked: false, matches: [] });
   } catch (error) {
     console.error("Leak check failed:", error);
     res.status(500).json({ error: "Server error during leak check." });
   }
 }
 
-// Helper: pick random fallback source
-function pickRandomSource() {
-  const sources = [
-    "Github",
-    "Pastebin",
-    "Darkweb",
-    "Cyber Paste Site",
-    "Exploit Forum",
-  ];
-  return sources[Math.floor(Math.random() * sources.length)];
+function groupMatches(rows) {
+  const grouped = {};
+
+  rows.forEach((row) => {
+    if (row.email) {
+      const key = `email:${row.email}`;
+      if (!grouped[key]) {
+        grouped[key] = { field: "email", value: row.email, sources: new Set() };
+      }
+      if (row.source) grouped[key].sources.add(row.source);
+    }
+
+    if (row.username) {
+      const key = `username:${row.username}`;
+      if (!grouped[key]) {
+        grouped[key] = { field: "username", value: row.username, sources: new Set() };
+      }
+      if (row.source) grouped[key].sources.add(row.source);
+    }
+
+    if (row.password) {
+      const key = `password:${row.password}`;
+      if (!grouped[key]) {
+        grouped[key] = { field: "password", value: row.password, sources: new Set() };
+      }
+      if (row.source) grouped[key].sources.add(row.source);
+    }
+  });
+
+  return Object.values(grouped).map((item) => ({
+    ...item,
+    sources: [...item.sources],
+  }));
 }
