@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/TeamDashboard.css";
-import { FiUsers, FiMail, FiShield, FiUserCheck, FiUserX } from "react-icons/fi";
+import { FiMail, FiShield, FiUserCheck, FiUserX } from "react-icons/fi";
 
 const mockStats = {
   activeIncidents: { total: 12, unassigned: 3 },
@@ -158,7 +158,7 @@ const StatusCircle = ({ pct }) => {
 
 const TeamDashboard = ({ user, userRole = "member", teamData: initialTeamData = null }) => {
   const [teamData, setTeamData] = useState(initialTeamData);
-  const [role, setRole] = useState(userRole);
+  const [role] = useState(userRole);
   const [members, setMembers] = useState([]);
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [loading, setLoading] = useState(false);

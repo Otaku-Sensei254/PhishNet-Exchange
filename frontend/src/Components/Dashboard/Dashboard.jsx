@@ -15,7 +15,7 @@ const Dashboard = ({ userTeam = null, userRole = "member" }) => {
   const [newPhone, setNewPhone] = useState("");
   // Set default to "pro" - the useEffect will correct it if needed
   const [upgradePlan, setUpgradePlan] = useState("pro");
-  const [teamMembers, setTeamMembers] = useState([]);
+  const [, setTeamMembers] = useState([]);
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const location = useLocation();
 
@@ -180,66 +180,7 @@ const Dashboard = ({ userTeam = null, userRole = "member" }) => {
     }
   };
 
-  /** ✅ Add Team Member */
-  const handleAddTeamMember = async (e) => {
-    e.preventDefault();
-    if (!isTeam()) {
-      toast.error("Only Team plan users can add members.");
-      return;
-    }
 
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/teams/add-member`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ email: newMemberEmail }),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setTeamMembers(data.updatedMembers);
-        setNewMemberEmail("");
-        toast.success("Team member added successfully!");
-      } else {
-        toast.error(data.msg || "Failed to add team member.");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Error adding team member.");
-    }
-  };
-
-  /** ✅ Download PDF Report */
-  const handleDownloadPDF = async () => {
-    if (!isTeam()) {
-      toast.error("Only Team plan users can download PDF reports.");
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/pdf`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'security-report.pdf';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success("PDF report downloaded!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Error downloading PDF report.");
-    }
-  };
 
   /** ✅ Upgrade Plan (Paystack initialization) */
   const handleUpgrade = async () => {

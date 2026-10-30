@@ -12,7 +12,6 @@ const InvitePage = () => {
 
   const teamId = searchParams.get("teamId");
   const teamName = searchParams.get("teamName") || "the team";
-  const email = searchParams.get("email");
 
   useEffect(() => {
     if (!teamId) {
@@ -26,7 +25,7 @@ const InvitePage = () => {
     } else {
       setStatus("login");
     }
-  }, [user, teamId]);
+  }, [user, teamId, handleAcceptInvitation]);
 
   const handleAcceptInvitation = async () => {
     setStatus("loading");
